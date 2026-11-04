@@ -1,114 +1,113 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Home } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { CircleUserRound, Menu, X } from "lucide-react";
 
 const LINKS = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Contact Us", href: "/contact" },
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Estates", href: "/#estates" },
-  { label: "Land", href: "/#land" },
-  { label: "Shortlets", href: "/#shortlets" },
-  { label: "Commercial", href: "/#commercial" },
+  { label: "Blog", href: "/#insights" },
 ];
+
+function BrandLogo({ className = "" }) {
+  return (
+    <img
+      src="/voks-kalis-logo.png"
+      alt="Voks-Kalis Global"
+      className={`h-9 w-[124px] object-contain ${className}`}
+    />
+  );
+}
+
+function NavigationLinks({ onNavigate, pathname }) {
+  return (
+    <>
+      {LINKS.map((link) => (
+        <a
+          key={link.label}
+          href={link.href}
+          onClick={onNavigate}
+          aria-current={(link.href === pathname || (link.href === "/" && pathname === "/")) ? "page" : undefined}
+          className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-medium transition-colors ${
+            link.href === pathname
+              ? "bg-brand-copper text-white"
+              : "text-text-primary hover:bg-brand-copper-subtle hover:text-brand-copper-dark"
+          }`}
+        >
+          {link.label}
+        </a>
+      ))}
+    </>
+  );
+}
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-forest/10 bg-cream/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <a href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-forest text-cream">
-            <Home size={18} strokeWidth={2} />
-          </span>
-          <span className="font-display text-xl font-medium tracking-tight text-forest">
-            Haven
-          </span>
-        </a>
-
-        <nav className="hidden items-center gap-8 md:flex">
-          {LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
-            >
-              {link.label}
-            </a>
-          ))}
+    <header className="sticky top-0 z-50 border-b border-border-default bg-white">
+      <div className="mx-auto grid min-h-[68px] max-w-7xl grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:min-h-[76px] lg:grid-cols-[1fr_auto_1fr] lg:px-10">
+        <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">
+          <NavigationLinks pathname={pathname} />
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <a
+          href="/"
+          aria-label="Voks-Kalis Global home"
+          className="justify-self-start lg:justify-self-center"
+        >
+          <BrandLogo />
+        </a>
+
+        <div className="hidden items-center justify-self-end gap-5 lg:flex">
           <a
             href="/login"
-            className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
+            className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-medium text-text-primary hover:text-brand-copper-dark"
           >
-            Sign in
+            <CircleUserRound size={15} />
+            Login/Register
           </a>
           <a
-            href="/register"
-            className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
+            href="/login"
+            className="whitespace-nowrap rounded-md bg-brand-copper px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-brand-copper-dark"
           >
-            Create account
-          </a>
-          <a
-            href="#list"
-            className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
-          >
-            List a property
-          </a>
-          <a
-            href="#contact"
-            className="rounded-full bg-forest px-5 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-forest-light"
-          >
-            Talk to an agent
+            + Add Property
           </a>
         </div>
 
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-forest md:hidden"
-          onClick={() => setOpen((v) => !v)}
+          className="flex h-10 w-10 items-center justify-center justify-self-end rounded-md text-text-primary lg:hidden"
+          onClick={() => setOpen((value) => !value)}
           aria-expanded={open}
-          aria-label="Toggle menu"
+          aria-label={open ? "Close menu" : "Open menu"}
         >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {open && (
-        <div className="border-t border-forest/10 bg-cream px-6 pb-6 md:hidden">
-          <nav className="flex flex-col gap-4 pt-4">
-            {LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-ink/80"
-                onClick={() => setOpen(false)}
-              >
-                {link.label}
-              </a>
-            ))}
+        <div className="absolute left-0 right-0 top-full border-t border-border-default bg-white px-5 pb-5 shadow-lg sm:px-8 lg:hidden">
+          <nav aria-label="Mobile navigation" className="flex flex-col gap-2 pt-4">
+            <NavigationLinks pathname={pathname} onNavigate={() => setOpen(false)} />
             <a
               href="/login"
-              className="text-sm font-medium text-ink/80"
+              className="mt-2 text-sm font-medium text-text-primary"
               onClick={() => setOpen(false)}
             >
-              Sign in
+              Login/Register
             </a>
             <a
-              href="/register"
-              className="text-sm font-medium text-ink/80"
+              href="/login"
+              className="rounded-md bg-brand-copper px-4 py-3 text-center text-sm font-semibold text-white"
               onClick={() => setOpen(false)}
             >
-              Create account
-            </a>
-            <a
-              href="#contact"
-              className="mt-2 rounded-full bg-forest px-5 py-3 text-center text-sm font-medium text-cream"
-              onClick={() => setOpen(false)}
-            >
-              Talk to an agent
+              + Add Property
             </a>
           </nav>
         </div>

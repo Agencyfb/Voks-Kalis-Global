@@ -2,8 +2,8 @@ import { ArrowLeft, Home, LockKeyhole, ShieldCheck } from "lucide-react";
 import LoginForm from "@/components/LoginForm";
 
 export const metadata = {
-  title: "Sign in | Haven",
-  description: "Sign in to your Haven account and continue your property search.",
+  title: "Sign in | Voks-Kalis Global",
+  description: "Sign in to your Voks-Kalis Global account and continue your property search.",
 };
 
 export default function LoginPage() {
@@ -13,9 +13,9 @@ export default function LoginPage() {
         <section className="relative hidden overflow-hidden bg-forest p-10 text-cream lg:flex lg:flex-col lg:justify-between xl:p-14">
           <div className="absolute inset-0 bg-grain opacity-10" />
           <div className="relative">
-            <a href="/" className="flex items-center gap-2" aria-label="Haven home">
+            <a href="/" className="flex items-center gap-2" aria-label="Voks-Kalis Global home">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gold text-forest-dark"><Home size={18} /></span>
-              <span className="font-display text-xl font-medium">Haven</span>
+              <span className="font-display text-xl font-medium">Voks-Kalis Global</span>
             </a>
             <div className="mt-24 max-w-sm">
               <p className="text-xs font-semibold uppercase tracking-widest2 text-gold-light">Welcome back</p>
@@ -31,12 +31,12 @@ export default function LoginPage() {
 
         <section className="flex flex-col justify-center px-4 py-8 sm:px-8 lg:px-16 xl:px-24">
           <div className="mb-8 flex items-center justify-between lg:hidden">
-            <a href="/" className="flex items-center gap-2 text-forest"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-forest text-cream"><Home size={18} /></span><span className="font-display text-xl font-medium">Haven</span></a>
+            <a href="/" className="flex items-center gap-2 text-forest"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-forest text-cream"><Home size={18} /></span><span className="font-display text-xl font-medium">Voks-Kalis Global</span></a>
             <a href="/" className="flex items-center gap-1 text-sm text-ink/60"><ArrowLeft size={15} /> Back home</a>
           </div>
           <div className="mx-auto w-full max-w-lg">
             <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">Your Haven account</p>
+              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">Your Voks-Kalis Global account</p>
               <h2 className="mt-2 font-display text-4xl text-forest">Sign in to continue</h2>
               <p className="mt-3 text-sm text-ink/60">Return to your shortlist and keep your property plans close.</p>
             </div>

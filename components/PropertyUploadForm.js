@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Check, FileText, ImagePlus, MapPin, Upload, X } from "lucide-react";
+import { removeCloudinaryAssets, uploadFileToCloudinary } from "@/lib/cloudinaryUpload";
 
 const DECLARATION = "I hereby declare that the informations i herein contained are true and is not intended to deceive anyone or the general public, should liability arise as a result of falsehood connected to the above information, i take full responsibility. I hereby indemnify the company of any loss that may be occasioned by these information that I have provided.";
 const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024;
+const DRAFT_KEY = "voks-kalis-property-upload-draft";
 
 const INITIAL_VALUES = {
   title: "",
-  category: "estates",
-  purpose: "sale",
+  category: "buildings",
+  purpose: "sales",
+  propertyType: "residential",
   price: "",
   location: "",
   propertyTitle: "",
+  otherPropertyTitle: "",
   propertyAddress: "",
   rootOfTitle: "",
   previousOwner: "",
@@ -29,33 +33,87 @@ const INITIAL_VALUES = {
 
 const FIELD_CLASS = "w-full rounded-md border border-forest/15 bg-white px-3.5 py-3 text-sm text-ink placeholder:text-ink/35 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15";
 
-function readFileAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error(`The file "${file.name}" could not be prepared.`));
-    reader.readAsDataURL(file);
-  });
+async function uploadFilesWithConcurrency(files, purposes, concurrency = 3) {
+  const results = new Array(files.length);
+  const errors = new Array(files.length);
+  let nextIndex = 0;
+  await Promise.all(Array.from({ length: Math.min(concurrency, files.length) }, async () => {
+    while (nextIndex < files.length) {
+      const index = nextIndex++;
+      try {
+        results[index] = await uploadFileToCloudinary(files[index], purposes[index]);
+      } catch (error) {
+        errors[index] = error;
+      }
+    }
+  }));
+  const firstError = errors.find(Boolean);
+  if (firstError) {
+    firstError.uploadedAssets = results.filter(Boolean);
+    throw firstError;
+  }
+  return results;
 }
 
 export default function PropertyUploadForm() {
+  const previewUrls = useRef(new Set());
   const [values, setValues] = useState(INITIAL_VALUES);
   const [photos, setPhotos] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
-  const [isProcessingAttachments, setIsProcessingAttachments] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingFiles, setIsUploadingFiles] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
+  const isLand = ["land", "lands"].includes(values.category);
+  const checklist = [
+    ["Property details", Boolean(values.title && values.description)],
+    ["Price and location", Boolean(values.price && values.location && values.propertyAddress)],
+    ["At least 2 photos", photos.length >= 2],
+    ["Title document", documents.length > 0 && Boolean(values.propertyTitle)],
+    ["Declaration accepted", values.declarationAccepted],
+  ];
+
+  useEffect(() => {
+    try {
+      const savedDraft = window.localStorage.getItem(DRAFT_KEY);
+      if (savedDraft) {
+        const parsedDraft = JSON.parse(savedDraft);
+        if (parsedDraft && typeof parsedDraft === "object" && !Array.isArray(parsedDraft)) {
+          setValues((current) => ({ ...current, ...parsedDraft }));
+        }
+      }
+    } catch (draftError) {
+      console.error("Unable to load the property form draft:", draftError);
+    }
+  }, []);
+
+  useEffect(() => () => {
+    previewUrls.current.forEach((url) => URL.revokeObjectURL(url));
+  }, []);
 
   function updateValue(event) {
     const { name, value } = event.target;
-    setValues((current) => ({ ...current, [name]: value }));
+    setValues((current) => {
+      if (name === "propertyType") {
+        return { ...current, propertyType: value };
+      }
+      if (name !== "category") return { ...current, [name]: value };
+      const selectingLand = value === "lands";
+      const currentTypeIsLand = ["raw-land", "agricultural-land"].includes(current.propertyType);
+      return {
+        ...current,
+        category: value,
+        propertyType: selectingLand
+          ? currentTypeIsLand ? current.propertyType : "raw-land"
+          : currentTypeIsLand ? "residential" : current.propertyType,
+      };
+    });
     setSaved(false);
+    setDraftSaved(false);
   }
 
-  async function handleAttachments(event, kind) {
-    const files = Array.from(event.target.files || []);
-    event.target.value = "";
+  function processAttachments(files, kind) {
     if (files.length === 0) return;
 
     const isImage = kind === "images";
@@ -82,23 +140,52 @@ export default function PropertyUploadForm() {
       return;
     }
 
-    setIsProcessingAttachments(true);
     setError("");
+    const preparedFiles = files.map((file) => {
+      const preview = isImage ? URL.createObjectURL(file) : "";
+      if (preview) previewUrls.current.add(preview);
+      return { file, name: file.name, type: file.type, size: file.size, preview };
+    });
+    if (isImage) setPhotos((current) => [...current, ...preparedFiles]);
+    else setDocuments((current) => [...current, ...preparedFiles]);
+    setSaved(false);
+    setDraftSaved(false);
+  }
+
+  function handleAttachments(event, kind) {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+    processAttachments(files, kind);
+  }
+
+  function saveDraft() {
     try {
-      const preparedFiles = await Promise.all(files.map(async (file) => ({
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        data: await readFileAsDataUrl(file),
-      })));
-      if (isImage) setPhotos((current) => [...current, ...preparedFiles]);
-      else setDocuments((current) => [...current, ...preparedFiles]);
-      setSaved(false);
-    } catch (uploadError) {
-      setError(uploadError.message);
-    } finally {
-      setIsProcessingAttachments(false);
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+      setDraftSaved(true);
+      setError("");
+    } catch (draftError) {
+      console.error("Unable to save the property form draft:", draftError);
+      setError("Unable to save a draft on this device.");
     }
+  }
+
+  function removePhoto(index) {
+    setPhotos((current) => {
+      const photo = current[index];
+      if (photo?.preview) {
+        URL.revokeObjectURL(photo.preview);
+        previewUrls.current.delete(photo.preview);
+      }
+      return current.filter((_, photoIndex) => photoIndex !== index);
+    });
+    setSaved(false);
+    setDraftSaved(false);
+  }
+
+  function removeDocument(index) {
+    setDocuments((current) => current.filter((_, documentIndex) => documentIndex !== index));
+    setSaved(false);
+    setDraftSaved(false);
   }
 
   async function submitListing(event) {
@@ -119,38 +206,97 @@ export default function PropertyUploadForm() {
     const listing = {
       ...values,
       price: Number(values.price),
-      propertyTitle: values.propertyTitle.trim(),
+      propertyTitle: values.propertyTitle === "other" ? values.otherPropertyTitle.trim() : values.propertyTitle.trim(),
       propertyAddress: values.propertyAddress.trim(),
       rootOfTitle: values.rootOfTitle.trim(),
       previousOwner: values.previousOwner.trim(),
-      beds: values.category === "land" ? null : values.beds ? Number(values.beds) : null,
-      baths: values.category === "land" ? null : values.baths ? Number(values.baths) : null,
+      beds: isLand ? null : values.beds ? Number(values.beds) : null,
+      baths: isLand ? null : values.baths ? Number(values.baths) : null,
       areaSqm: values.areaSqm ? Number(values.areaSqm) : null,
-      features: values.category === "land" ? values.features.trim() : "",
-      landmarks: values.category === "land" ? values.landmarks.trim() : "",
-      landUse: values.category === "land" ? values.landUse : "",
-      images: photos.map(({ data, name, type }) => ({ data, name, type })),
-      documents: documents.map(({ data, name, type }) => ({ data, name, type })),
+      features: isLand ? values.features.trim() : "",
+      landmarks: isLand ? values.landmarks.trim() : "",
+      landUse: isLand ? values.landUse : "",
       declarationAccepted: values.declarationAccepted,
     };
 
     setIsSubmitting(true);
     setError("");
+    let uploadedAssets = [];
     try {
-      const response = await fetch("/api/properties", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(listing),
-      });
+      try {
+        setIsUploadingFiles(true);
+        const allFiles = [...photos, ...documents];
+        const uploadedFiles = await uploadFilesWithConcurrency(
+          allFiles.map((attachment) => attachment.file),
+          [
+            ...photos.map(() => "property-image"),
+            ...documents.map(() => "property-document"),
+          ],
+        );
+        const uploadedImages = uploadedFiles.slice(0, photos.length);
+        const uploadedDocuments = uploadedFiles.slice(photos.length);
+        uploadedAssets = uploadedFiles;
+        setIsUploadingFiles(false);
+        listing.images = uploadedImages.map((asset) => ({
+          ...asset,
+          name: asset.name,
+          mimeType: asset.mimeType,
+        }));
+        listing.documents = uploadedDocuments.map((asset) => ({
+          ...asset,
+          name: asset.name,
+          mimeType: asset.mimeType,
+        }));
+      } catch (uploadError) {
+        setIsUploadingFiles(false);
+        uploadedAssets = uploadError.uploadedAssets || [];
+        try {
+          await removeCloudinaryAssets(uploadedAssets.map((asset) => ({
+            publicId: asset.publicId,
+            resourceType: asset.resourceType,
+            type: asset.uploadType,
+          })));
+        } catch (cleanupError) {
+          console.error("Could not remove partially uploaded property assets:", cleanupError);
+        }
+        throw uploadError;
+      }
+
+      let response;
+      try {
+        response = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(listing),
+        });
+      } catch {
+        setError("We couldn't confirm the property submission. Check your submitted properties before trying again.");
+        return;
+      }
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
+        try {
+          await removeCloudinaryAssets(uploadedAssets.map((asset) => ({
+            publicId: asset.publicId,
+            resourceType: asset.resourceType,
+            type: asset.uploadType,
+          })));
+        } catch (cleanupError) {
+          console.error("Could not remove property assets after submission failed:", cleanupError);
+        }
         setError(result.error || "Unable to submit this property. Please try again.");
         return;
       }
       setSaved(true);
-    } catch {
-      setError("We couldn't reach Haven. Check your connection and try again.");
+      try {
+        window.localStorage.removeItem(DRAFT_KEY);
+      } catch (draftError) {
+        console.error("Unable to clear the submitted property draft:", draftError);
+      }
+    } catch (uploadError) {
+      setError(uploadError.message || "Unable to upload property files. Please try again.");
     } finally {
+      setIsUploadingFiles(false);
       setIsSubmitting(false);
     }
   }
@@ -161,7 +307,7 @@ export default function PropertyUploadForm() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <a href="/dashboard" className="flex items-center gap-2 text-forest" aria-label="Back to dashboard">
             <ArrowLeft size={17} />
-            <span className="font-display text-lg">Haven</span>
+            <span className="font-display text-lg">Voks-Kalis Global</span>
           </a>
           <span className="text-xs font-semibold uppercase tracking-widest2 text-ink/45">Listing studio</span>
         </div>
@@ -190,20 +336,32 @@ export default function PropertyUploadForm() {
                   <input className={FIELD_CLASS} name="title" value={values.title} onChange={updateValue} placeholder="e.g. Whitestone Villa" required maxLength={90} />
                 </label>
                 <label>
-                  <span className="mb-2 block text-sm font-medium">Property type</span>
+                  <span className="mb-2 block text-sm font-medium">Property category</span>
                   <select className={FIELD_CLASS} name="category" value={values.category} onChange={updateValue}>
-                    <option value="estates">Residential</option>
-                    <option value="land">Land</option>
-                    <option value="shortlets">Shortlet</option>
-                    <option value="commercial">Commercial</option>
+                    <option value="lands">Lands</option>
+                    <option value="buildings">Buildings</option>
+                    <option value="shortlets">Shortlets</option>
+                    <option value="rentals">Rentals</option>
                   </select>
                 </label>
                 <label>
-                  <span className="mb-2 block text-sm font-medium">Listing type</span>
+                  <span className="mb-2 block text-sm font-medium">Property purpose</span>
                   <select className={FIELD_CLASS} name="purpose" value={values.purpose} onChange={updateValue}>
-                    <option value="sale">For sale</option>
-                    <option value="rent">For rent</option>
-                    <option value="shortlet">Short stay</option>
+                    <option value="sales">Sales</option>
+                    <option value="lease">Lease</option>
+                    <option value="rent">Rent</option>
+                  </select>
+                </label>
+                <label>
+                  <span className="mb-2 block text-sm font-medium">Property type</span>
+                  <select className={FIELD_CLASS} name="propertyType" value={values.propertyType} onChange={updateValue} required>
+                    <option value="residential">Residential</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="industrial">Industrial</option>
+                    <optgroup label="Land">
+                      <option value="raw-land">Raw</option>
+                      <option value="agricultural-land">Agricultural</option>
+                    </optgroup>
                   </select>
                 </label>
                 <label className="sm:col-span-2">
@@ -255,14 +413,14 @@ export default function PropertyUploadForm() {
             </section>
 
             <section className="border-t border-forest/15 pt-5">
-              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">03 / {values.category === "land" ? "Property features" : "Useful specifics"}</p>
-              <h2 className="mt-2 font-display text-2xl text-forest">{values.category === "land" ? "Land details" : "Space & rooms"}</h2>
-              {values.category === "land" ? (
+              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">03 / {isLand ? "Property features" : "Useful specifics"}</p>
+              <h2 className="mt-2 font-display text-2xl text-forest">{isLand ? "Land details" : "Space & rooms"}</h2>
+              {isLand ? (
                 <div className="mt-5 grid gap-5 sm:grid-cols-2">
                   <label>
                     <span className="mb-2 block text-sm font-medium">Land use</span>
                     <select className={FIELD_CLASS} name="landUse" value={values.landUse} onChange={updateValue} required>
-                      <option value="">Select a purpose</option>
+                      <option value="">Select land use</option>
                       <option value="commercial">Commercial</option>
                       <option value="residential">Residential</option>
                       <option value="industrial">Industrial</option>
@@ -298,10 +456,6 @@ export default function PropertyUploadForm() {
               <h2 className="mt-2 font-display text-2xl text-forest">Property title details</h2>
               <div className="mt-5 grid gap-5 sm:grid-cols-2">
                 <label>
-                  <span className="mb-2 block text-sm font-medium">Title of the property</span>
-                  <input className={FIELD_CLASS} name="propertyTitle" value={values.propertyTitle} onChange={updateValue} placeholder="e.g. Certificate of Occupancy" required maxLength={120} />
-                </label>
-                <label>
                   <span className="mb-2 block text-sm font-medium">Previous owner</span>
                   <input className={FIELD_CLASS} name="previousOwner" value={values.previousOwner} onChange={updateValue} placeholder="Full name or organisation" required maxLength={160} />
                 </label>
@@ -333,6 +487,7 @@ export default function PropertyUploadForm() {
                     onChange={(event) => {
                       setValues((current) => ({ ...current, declarationAccepted: event.target.checked }));
                       setSaved(false);
+                      setDraftSaved(false);
                     }}
                     className="mt-0.5 h-4 w-4 accent-forest"
                     required
@@ -343,73 +498,102 @@ export default function PropertyUploadForm() {
             </section>
           </div>
 
-          <aside className="space-y-6 lg:sticky lg:top-6">
-            <section className="border-t-2 border-gold pt-5">
-              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">Property photos</p>
-              <p className="mt-2 text-xs text-ink/55">Add 2-10 JPG, PNG or WEBP photos, up to 2 MB each.</p>
-              <label className="mt-4 flex min-h-36 cursor-pointer flex-col items-center justify-center border border-dashed border-forest/25 bg-white p-5 text-center transition hover:border-gold">
-                <ImagePlus size={22} className="mb-3 text-forest" />
-                <span className="text-sm font-semibold text-forest">Choose property photos</span>
-                <span className="mt-1 text-xs text-ink/50">Select multiple photos at once</span>
-                <input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => handleAttachments(event, "images")} disabled={isProcessingAttachments || isSubmitting} />
+          <aside className="space-y-3 lg:sticky lg:top-6">
+            <section className="rounded-lg border border-forest/10 bg-white p-4 shadow-sm">
+              <h2 className="font-display text-base font-semibold text-forest">Property photos</h2>
+              <label
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  if (!isSubmitting) {
+                    processAttachments(Array.from(event.dataTransfer.files), "images");
+                  }
+                }}
+                className="mt-3 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-gold/60 bg-[#fff9f1] p-4 text-center transition hover:border-gold"
+              >
+                <ImagePlus size={20} className="mb-2 text-forest" />
+                <span className="text-xs font-semibold text-clay">Drop photos or browse files</span>
+                <span className="mt-1 text-[10px] text-ink/50">JPG, PNG or WEBP · Up to 2 MB each</span>
+                <input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => handleAttachments(event, "images")} disabled={isSubmitting} />
               </label>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {photos.map((photo, index) => (
-                  <div key={`${photo.name}-${index}`} className="relative min-w-0 border border-forest/10 bg-white">
-                    <img src={photo.data} alt={photo.name} className="aspect-[4/3] w-full object-cover" />
-                    <p className="truncate px-2 py-1.5 text-[11px] text-ink/60">{photo.name}</p>
-                    <button type="button" aria-label={`Remove ${photo.name}`} onClick={() => {
-                      setPhotos((current) => current.filter((_, photoIndex) => photoIndex !== index));
-                      setSaved(false);
-                    }} className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center bg-white/90 text-ink hover:text-clay"><X size={15} /></button>
-                  </div>
-                ))}
+              {photos[0] && (
+                <div className="group relative mt-3 overflow-hidden rounded-md">
+                  <img src={photos[0].preview} alt={photos[0].name} className="h-28 w-full object-cover" />
+                  <button type="button" aria-label={`Remove ${photos[0].name}`} onClick={() => removePhoto(0)} className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-ink hover:text-clay"><X size={14} /></button>
+                </div>
+              )}
+              {photos.length > 0 && (
+                <p className="mt-2 truncate text-[10px] text-ink/55">Cover photo · {photos[0].name}</p>
+              )}
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                {photos.slice(1, 4).map((photo, index) => {
+                  const photoIndex = index + 1;
+                  return (
+                    <div key={`${photo.name}-${photoIndex}`} className="group relative overflow-hidden rounded-md">
+                      <img src={photo.preview} alt={photo.name} className="h-14 w-full object-cover" />
+                      <button type="button" aria-label={`Remove ${photo.name}`} onClick={() => removePhoto(photoIndex)} className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/90 text-ink opacity-0 transition group-hover:opacity-100 focus:opacity-100"><X size={12} /></button>
+                    </div>
+                  );
+                })}
               </div>
-              <p className="mt-2 text-xs text-ink/50">{photos.length} photo{photos.length === 1 ? "" : "s"} selected</p>
+              <p className="mt-2 text-[10px] text-ink/55">{photos.length} photo{photos.length === 1 ? "" : "s"} added · Include at least 2 clear photos</p>
             </section>
 
-            <section className="border-t border-forest/15 pt-5">
-              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">Title documents</p>
-              <p className="mt-2 text-xs text-ink/55">Add 1-10 supporting PDFs or images, up to 4 MB each.</p>
-              <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 border border-forest/15 bg-white px-4 py-3 text-sm font-semibold text-forest hover:border-gold">
-                <FileText size={16} /> Choose documents
-                <input className="sr-only" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" multiple onChange={(event) => handleAttachments(event, "documents")} disabled={isProcessingAttachments || isSubmitting} />
+            <section className="rounded-lg border border-forest/10 bg-white p-4 shadow-sm">
+              <h2 className="font-display text-base font-semibold text-forest">Ownership documents</h2>
+              <label className="mt-3 block">
+                <span className="mb-1.5 block text-xs font-medium text-ink/75">Title type</span>
+                <select className={`${FIELD_CLASS} py-2.5 text-xs`} name="propertyTitle" value={values.propertyTitle} onChange={updateValue} required>
+                  <option value="">Select title type</option>
+                  <option value="Certificate of Occupancy">Certificate of Occupancy</option>
+                  <option value="Deed of Assignment">Deed of Assignment</option>
+                  <option value="Governor's Consent">Governor&apos;s Consent</option>
+                  <option value="Survey Plan">Survey Plan</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              {values.propertyTitle === "other" && (
+                <input className={`${FIELD_CLASS} mt-2 py-2.5 text-xs`} name="otherPropertyTitle" value={values.otherPropertyTitle} onChange={updateValue} placeholder="Enter title type" required maxLength={120} />
+              )}
+              <label className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-md border border-forest/15 px-3 py-2.5 text-xs font-semibold text-forest transition hover:border-gold">
+                <Upload size={14} /> Attach title document
+                <input className="sr-only" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" multiple onChange={(event) => handleAttachments(event, "documents")} disabled={isSubmitting} />
               </label>
               {documents.length > 0 && (
-                <ul className="mt-3 space-y-2">
+                <ul className="mt-2 space-y-1.5">
                   {documents.map((document, index) => (
-                    <li key={`${document.name}-${index}`} className="flex items-center justify-between gap-2 border border-forest/10 bg-white px-3 py-2 text-xs">
-                      <span className="flex min-w-0 items-center gap-2 text-ink/70"><FileText size={14} className="shrink-0 text-forest" /><span className="truncate">{document.name}</span></span>
-                      <button type="button" aria-label={`Remove ${document.name}`} onClick={() => {
-                        setDocuments((current) => current.filter((_, documentIndex) => documentIndex !== index));
-                        setSaved(false);
-                      }} className="shrink-0 text-ink/50 hover:text-clay"><X size={15} /></button>
+                    <li key={`${document.name}-${index}`} className="flex items-center justify-between gap-2 rounded bg-[#f8f7f5] px-2 py-1.5 text-[10px]">
+                      <span className="flex min-w-0 items-center gap-1.5 text-ink/70"><FileText size={12} className="shrink-0 text-clay" /><span className="truncate">{document.name}</span></span>
+                      <button type="button" aria-label={`Remove ${document.name}`} onClick={() => removeDocument(index)} className="shrink-0 text-ink/50 hover:text-clay"><X size={13} /></button>
                     </li>
                   ))}
                 </ul>
               )}
-            </section>
-            {isProcessingAttachments && <p role="status" className="text-xs text-ink/55">Preparing your files...</p>}
-
-            <section className="border-t border-forest/15 pt-5">
-              <p className="text-xs font-semibold uppercase tracking-widest2 text-clay">Live preview</p>
-              <div className="mt-4 overflow-hidden border border-forest/10 bg-white">
-                {photos[0] ? <img src={photos[0].data} alt="" className="aspect-[16/9] w-full object-cover" /> : <div className="flex aspect-[16/9] items-center justify-center bg-sand/40 text-forest/35"><ImagePlus size={28} /></div>}
-                <div className="p-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-clay">{values.purpose === "sale" ? "For sale" : values.purpose === "rent" ? "For rent" : "Short stay"}</p>
-                  <h3 className="mt-2 truncate font-display text-xl text-forest">{values.title || "Your property title"}</h3>
-                  <p className="mt-1 flex items-center gap-1 text-xs text-ink/55"><MapPin size={13} />{values.location || "Property location"}</p>
-                  <p className="mt-4 font-semibold text-forest">{values.price ? `₦${Number(values.price).toLocaleString("en-NG")}` : "Price"}</p>
-                </div>
-              </div>
+              <p className="mt-2 text-[10px] leading-relaxed text-ink/50">PDF or image · Up to 4 MB each. Documents are private and reviewed by the Voks-Kalis team.</p>
             </section>
 
-            {error && <p role="alert" className="border-l-2 border-clay bg-clay/5 px-3 py-2 text-sm text-clay">{error}</p>}
-            {saved && <p role="status" className="flex items-center gap-2 border-l-2 border-forest bg-forest/5 px-3 py-2 text-sm text-forest"><Check size={16} /> Property submitted for review.</p>}
-            <button type="submit" disabled={isProcessingAttachments || isSubmitting || saved} className="flex w-full items-center justify-center gap-2 bg-forest px-5 py-3.5 text-sm font-semibold text-cream transition hover:bg-forest-light disabled:cursor-wait disabled:opacity-70">
-              {isProcessingAttachments ? "Preparing files..." : isSubmitting ? "Submitting..." : saved ? "Submitted" : "Submit property"} {!isProcessingAttachments && !isSubmitting && !saved && <Upload size={16} />}
-            </button>
-            <a href="/dashboard" className="flex w-full items-center justify-center gap-2 py-2 text-sm text-ink/55 hover:text-forest"><X size={15} /> Cancel</a>
+            <section className="rounded-lg border border-forest/10 bg-white p-4 shadow-sm">
+              <h2 className="font-display text-base font-semibold text-forest">Ready to list?</h2>
+              <p className="mt-2 text-xs leading-relaxed text-ink/55">Complete the required details, photos and ownership document before submitting.</p>
+              <ul className="mt-3 space-y-2">
+                {checklist.map(([label, complete]) => (
+                  <li key={label} className="flex items-center gap-2 text-[11px] text-ink/65">
+                    <span className={`flex h-4 w-4 items-center justify-center rounded-full ${complete ? "bg-forest text-white" : "border border-ink/20 text-transparent"}`}>{complete && <Check size={10} />}</span>
+                    {label}
+                  </li>
+                ))}
+              </ul>
+              {isUploadingFiles && <p role="status" className="mt-3 text-xs text-ink/55">Uploading files securely to Cloudinary...</p>}
+              {error && <p role="alert" className="mt-3 rounded border border-clay/20 bg-clay/5 px-2.5 py-2 text-xs text-clay">{error}</p>}
+              {saved && <p role="status" className="mt-3 flex items-center gap-2 text-xs text-forest"><Check size={14} /> Property submitted for review.</p>}
+              {draftSaved && <p role="status" className="mt-3 text-xs text-forest">Draft saved on this device. Reattach photos and documents before submitting.</p>}
+              <button type="button" onClick={saveDraft} disabled={isSubmitting} className="mt-3 w-full rounded-md border border-forest/15 px-3 py-2 text-xs font-semibold text-clay transition hover:border-gold disabled:opacity-50">Save draft</button>
+              <button type="submit" disabled={isSubmitting || saved} className="mt-2 flex w-full items-center justify-center gap-2 rounded-md bg-[#a65f0c] px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-[#854b09] disabled:cursor-wait disabled:opacity-70">
+                {isUploadingFiles ? "Uploading files..." : isSubmitting ? "Submitting..." : saved ? "Submitted" : "Submit for review"} {!isSubmitting && !saved && <Upload size={13} />}
+              </button>
+              <p className="mt-2 text-[10px] leading-relaxed text-ink/50">For agents · Listings are usually reviewed within 24–48 hours.</p>
+            </section>
+            <a href="/dashboard" className="flex w-full items-center justify-center gap-2 py-2 text-xs text-ink/55 hover:text-forest"><X size={14} /> Cancel</a>
           </aside>
         </form>
       </div>

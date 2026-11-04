@@ -120,7 +120,7 @@ export default function RegisterForm() {
       } catch {}
       setSubmitted(true);
     } catch {
-      setServerError("We couldn't reach Haven. Check your connection and try again.");
+      setServerError("We couldn't reach Voks-Kalis Global. Check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -134,7 +134,7 @@ export default function RegisterForm() {
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-forest text-cream">
           <Check size={25} />
         </span>
-        <h2 className="mt-6 font-display text-3xl text-forest">Welcome to Haven.</h2>
+        <h2 className="mt-6 font-display text-3xl text-forest">Welcome to Voks-Kalis Global.</h2>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink/65">
           Your account is ready. We&apos;ll use {values.email} to share properties that fit your plans.
         </p>
@@ -153,7 +153,7 @@ export default function RegisterForm() {
         <Field label="Email address" name="email" type="email" value={values.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" icon={Mail} />
         <Field label="Phone number" name="phone" type="tel" value={values.phone} onChange={handleChange} error={errors.phone} placeholder="+234 800 000 0000" />
         <div className="sm:col-span-2">
-          <p className="mb-2 text-sm font-medium text-ink">I am joining Haven as</p>
+          <p className="mb-2 text-sm font-medium text-ink">I am joining Voks-Kalis Global as</p>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
               { value: "buyer", label: "Buyer", description: "Find your next home" },
@@ -196,7 +196,7 @@ export default function RegisterForm() {
       <div className="mt-6">
         <label className="flex items-start gap-3 text-sm leading-relaxed text-ink/65">
           <input type="checkbox" name="terms" checked={values.terms} onChange={handleChange} className="mt-1 h-4 w-4 accent-forest" />
-          <span>I agree to Haven&apos;s <a href="#terms" className="font-medium text-forest underline underline-offset-2">terms</a> and <a href="#privacy" className="font-medium text-forest underline underline-offset-2">privacy policy</a>.</span>
+          <span>I agree to Voks-Kalis Global&apos;s <a href="#terms" className="font-medium text-forest underline underline-offset-2">terms</a> and <a href="#privacy" className="font-medium text-forest underline underline-offset-2">privacy policy</a>.</span>
         </label>
         {errors.terms && <p className="mt-1.5 text-xs text-clay">{errors.terms}</p>}
       </div>

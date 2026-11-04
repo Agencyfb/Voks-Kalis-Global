@@ -24,7 +24,7 @@ export default function TrustBand() {
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="max-w-lg">
           <span className="text-xs font-semibold uppercase tracking-widest2 text-gold">
-            Why Haven
+            Why Voks-Kalis Global
           </span>
           <h2 className="mt-2 font-display text-3xl text-cream sm:text-4xl">
             Property in Lagos moves fast. We slow down the parts that matter.

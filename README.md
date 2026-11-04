@@ -1,4 +1,4 @@
-# Haven — Real Estate Homepage (Next.js + JavaScript)
+# Voks-Kalis Global — Real Estate Platform (Next.js + JavaScript)
 
 A homepage for a real estate platform: estates, land, shortlets and
 commercial listings, built with Next.js App Router, plain JavaScript
@@ -17,13 +17,14 @@ Open http://localhost:3000.
 
 ```
 app/
-  layout.js          Root layout, loads fonts (Fraunces + Inter)
-  page.js             Homepage — assembles all sections
+  layout.js          Root layout, loads the Poppins type family
+  page.js             Homepage — assembles the landing-page sections
   globals.css         Tailwind + base styles
 components/
   Navbar.js           Sticky nav with mobile menu
-  Hero.js             Headline, search bar, image stack
+  Hero.js             Image-backed headline and property search
   Categories.js        Estates / Land / Shortlets / Commercial quick-nav
+  HomeSections.js      About, services, marketplace, seller, consultant and insights sections
   PropertyCard.js      Reusable listing card (used everywhere)
   FeaturedProperties.js  Curated grid of featured listings
   CategorySection.js   Generic "listings by category" section
@@ -50,15 +51,17 @@ same shape:
 - `category`: one of `estates | land | shortlets | commercial`
 - `purpose`: one of `sale | rent | shortlet` (drives the badge color)
 
-## Design notes
+## Design system
 
-- Palette: forest green (`#17392E`) + brass gold (`#C9A227`) + warm sand/cream,
-  with terracotta clay as a sparing accent — steering away from the generic
-  cream-and-terracotta AI look by keeping green as the dominant identity.
-- Type: **Fraunces** (display serif, used italic in the hero) paired with
-  **Inter** (body/UI).
-- Signature element: the overlapping, slightly rotated photo stack in the
-  hero, echoing a property brochure rather than a single hero banner.
+- Copper-led brand: copper `#CB843F`, dark copper `#A15912` and subtle copper
+  `#FBF2E9`.
+- Interface foundations: page `#FAFAFA`, cards `#FFFFFF`, subtle surfaces
+  `#F5F5F5`, primary text `#242424`, secondary text `#666666` and borders
+  `#E0E0E0`. Semantic property-status colors are also available as Tailwind
+  tokens.
+- Type: **Poppins** is used throughout the product UI.
+- Shared Tailwind tokens keep the landing page, authentication, marketplace
+  and dashboards aligned with the same visual foundations.
 - Accessible by default: visible focus rings, `prefers-reduced-motion`
   respected, semantic headings throughout.
 

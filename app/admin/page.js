@@ -8,8 +8,8 @@ import User from "@/models/User";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Admin dashboard | Haven",
-  description: "Manage Haven property listings and sales.",
+  title: "Admin dashboard | Voks-Kalis Global",
+  description: "Manage Voks-Kalis Global property listings and sales.",
 };
 
 export default async function AdminPage() {

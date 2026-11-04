@@ -91,7 +91,7 @@ function OTPForm() {
         </span>
         <h2 className="mt-6 font-display text-3xl text-forest">Verification complete.</h2>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink/65">
-          Your account has been verified. Welcome to Haven.
+          Your account has been verified. Welcome to Voks-Kalis Global.
         </p>
         <a href="/dashboard" className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest/90">
           Open dashboard <ArrowRight size={16} />

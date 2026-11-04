@@ -1,31 +1,26 @@
-import { Fraunces, Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
+import SectionRevealProvider from "@/components/SectionRevealProvider";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  variable: "--font-poppins",
   display: "swap",
 });
 
 export const metadata = {
-  title: "Haven | Homes, Land & Shortlets",
+  title: "Voks-Kalis Global | Real Estate",
   description:
-    "Find estates, land, shortlets and commercial property you can trust — verified listings, honest pricing.",
+    "Your trusted partner for residential and commercial real estate, property management and development.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="font-body antialiased">{children}</body>
+    <html lang="en" className={poppins.variable}>
+      <body className="font-body antialiased">
+        <SectionRevealProvider>{children}</SectionRevealProvider>
+      </body>
     </html>
   );
 }

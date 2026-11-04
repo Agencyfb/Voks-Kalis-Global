@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getCloudinary } from "@/lib/cloudinary";
 import { getRequestUser } from "@/lib/requestUser";
 import Property from "@/models/Property";
+import User from "@/models/User";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,7 @@ function formatProperty(property, includeAttachments = false) {
     title: property.title,
     category: property.category,
     purpose: property.purpose,
+    propertyType: property.propertyType,
     price: property.price,
     location: property.location,
     description: property.description,
@@ -58,8 +60,12 @@ function formatProperty(property, includeAttachments = false) {
     declarationAcceptedAt: property.declarationAcceptedAt,
     submittedBy: submitter ? `${submitter.firstName} ${submitter.lastName}`.trim() : "Property seller",
     submittedByRole: submitter?.role || "seller",
+    submitterEmail: submitter?.email || "",
+    submitterPhone: submitter?.phone || "",
+    submittedAt: property.createdAt,
     assignedAgent: property.assignedAgent,
     workflowStatus: property.status,
+    reviewNote: property.reviewNote || "",
     paymentStatus: property.paymentStatus,
     soldBy: property.soldBy,
     soldAt: property.soldAt,
@@ -85,7 +91,7 @@ export async function GET(request) {
         return NextResponse.json({ error: "A valid property ID is required." }, { status: 400 });
       }
       const property = await Property.findById(propertyId)
-        .populate("submittedBy", "firstName lastName role")
+        .populate("submittedBy", "firstName lastName role email phone")
         .lean();
       if (!property) return NextResponse.json({ error: "Property not found." }, { status: 404 });
       return NextResponse.json(
@@ -94,13 +100,27 @@ export async function GET(request) {
       );
     }
 
-    const properties = await Property.find()
-      .select("-images -documents")
-      .populate("submittedBy", "firstName lastName role")
-      .sort({ createdAt: -1 })
-      .lean();
+    const [properties, landlords] = await Promise.all([
+      Property.find()
+        .select("-images -documents")
+        .populate("submittedBy", "firstName lastName role email phone")
+        .sort({ createdAt: -1 })
+        .lean(),
+      User.find({ role: "landlord" })
+        .select("firstName lastName email phone")
+        .sort({ firstName: 1, lastName: 1 })
+        .lean(),
+    ]);
 
-    return NextResponse.json({ properties: properties.map(formatProperty) });
+    return NextResponse.json({
+      properties: properties.map(formatProperty),
+      landlords: landlords.map((landlord) => ({
+        id: landlord._id.toString(),
+        name: `${landlord.firstName} ${landlord.lastName}`.trim(),
+        email: landlord.email,
+        phone: landlord.phone,
+      })),
+    }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Admin property list failed:", error);
     return NextResponse.json({ error: "Unable to load properties right now." }, { status: 500 });
@@ -128,8 +148,18 @@ export async function PATCH(request) {
       if (!["pending", "approved", "declined", "sold"].includes(body.updates.workflowStatus)) {
         return NextResponse.json({ error: "Choose a valid property status." }, { status: 400 });
       }
+      if (body.updates.workflowStatus === "declined"
+        && (typeof body.updates.reviewNote !== "string" || !body.updates.reviewNote.trim())) {
+        return NextResponse.json({ error: "Add a review note before declining this property." }, { status: 400 });
+      }
       updates.status = body.updates.workflowStatus;
       updates.reviewedAt = new Date();
+    }
+    if (body.updates.reviewNote !== undefined) {
+      if (typeof body.updates.reviewNote !== "string" || body.updates.reviewNote.length > 500) {
+        return NextResponse.json({ error: "Review notes must be 500 characters or fewer." }, { status: 400 });
+      }
+      updates.reviewNote = body.updates.reviewNote.trim();
     }
     if (body.updates.paymentStatus !== undefined) {
       if (!["in-progress", "paid"].includes(body.updates.paymentStatus)) {
@@ -152,7 +182,7 @@ export async function PATCH(request) {
     if (body.updates.soldAt !== undefined) updates.soldAt = body.updates.soldAt ? new Date(body.updates.soldAt) : null;
 
     const property = await Property.findByIdAndUpdate(body.id, { $set: updates }, { new: true, runValidators: true })
-      .populate("submittedBy", "firstName lastName role")
+      .populate("submittedBy", "firstName lastName role email phone")
       .lean();
     if (!property) return NextResponse.json({ error: "Property not found." }, { status: 404 });
 

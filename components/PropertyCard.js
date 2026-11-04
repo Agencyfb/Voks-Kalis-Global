@@ -3,13 +3,17 @@ import { formatPrice } from "@/data/properties";
 
 const PURPOSE_STYLES = {
   sale: "bg-forest text-cream",
+  sales: "bg-forest text-cream",
   rent: "bg-gold text-forest-dark",
+  lease: "bg-gold text-forest-dark",
   shortlet: "bg-clay text-cream",
 };
 
 const PURPOSE_LABEL = {
   sale: "For sale",
+  sales: "For sale",
   rent: "For rent",
+  lease: "For lease",
   shortlet: "Shortlet",
 };
 
@@ -40,9 +44,9 @@ export default function PropertyCard({ property }) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <span
-          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${PURPOSE_STYLES[purpose]}`}
+          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${PURPOSE_STYLES[purpose] || "bg-forest text-cream"}`}
         >
-          {PURPOSE_LABEL[purpose]}
+          {PURPOSE_LABEL[purpose] || purpose}
         </span>
         {verified && (
           <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-forest">

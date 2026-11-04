@@ -3,8 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --font-fraunces: "Fraunces", serif;
-  --font-inter: "Inter", sans-serif;
+  --brand-copper: #CB843F;
+  --brand-copper-dark: #A15912;
+  --brand-copper-subtle: #FBF2E9;
+  --surface-page: #FAFAFA;
+  --surface-card: #FFFFFF;
+  --surface-subtle: #F5F5F5;
+  --text-primary: #242424;
+  --text-secondary: #666666;
+  --text-inverse: #FFFFFF;
+  --border-default: #E0E0E0;
 }
 
 html {
@@ -12,13 +20,64 @@ html {
 }
 
 body {
-  background-color: #FAF8F4;
-  color: #1D2521;
+  background-color: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-poppins), sans-serif;
 }
 
 ::selection {
-  background-color: #C9A227;
-  color: #17392E;
+  background-color: var(--brand-copper);
+  color: var(--text-inverse);
+}
+
+@keyframes scroll-section-float-in {
+  from {
+    opacity: 1;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main section[data-scroll-reveal-visible="true"],
+main footer[data-scroll-reveal-visible="true"],
+.mobile-scroll-reveal[data-visible="true"] {
+  animation: scroll-section-float-in 650ms ease-out both;
+}
+
+.mobile-scroll-reveal {
+  transition: none;
+}
+
+.testimonial-portrait {
+  opacity: 1;
+}
+
+@keyframes testimonial-float-in {
+  from {
+    opacity: 0.7;
+    transform: translateY(36px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  #testimonials[data-visible="true"] .testimonial-portrait {
+    animation: testimonial-float-in 700ms ease-out both;
+  }
+}
+
+@media (min-width: 768px) {
+  #testimonials article[data-slide-entered="true"] .testimonial-portrait {
+    animation: testimonial-float-in 700ms ease-out both;
+  }
 }
 
 /* visible keyboard focus everywhere */
@@ -26,7 +85,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid #C9A227;
+  outline: 2px solid var(--brand-copper);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -40,8 +99,20 @@ select:focus-visible {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  main section[data-scroll-reveal-visible="true"],
+  main footer[data-scroll-reveal-visible="true"],
+  .mobile-scroll-reveal[data-visible="true"] {
+    animation: none;
+  }
 }
 
 .text-balance {
   text-wrap: balance;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
 }

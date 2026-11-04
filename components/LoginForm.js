@@ -66,7 +66,7 @@ export default function LoginForm() {
       setDestination(result.user.role === "admin" ? "/admin" : "/dashboard");
       setSubmitted(true);
     } catch {
-      setServerError("We couldn't reach Haven. Check your connection and try again.");
+      setServerError("We couldn't reach Voks-Kalis Global. Check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -116,10 +116,10 @@ export default function LoginForm() {
       </div>
 
       {serverError && <p role="alert" className="mt-5 text-sm text-clay">{serverError}</p>}
-      <button type="submit" disabled={isSubmitting} className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-red-600 px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-red-700 disabled:cursor-wait disabled:opacity-70">
+      <button type="submit" disabled={isSubmitting} className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-forest-dark disabled:cursor-wait disabled:opacity-70">
         {isSubmitting ? "Signing in..." : "Sign in"} {!isSubmitting && <ArrowRight size={16} />}
       </button>
-      <p className="mt-5 text-center text-xs text-ink/45">New to Haven? <a href="/register" className="font-semibold text-forest hover:text-forest-light">Create an account</a></p>
+      <p className="mt-5 text-center text-xs text-ink/45">New to Voks-Kalis Global? <a href="/register" className="font-semibold text-forest hover:text-forest-light">Create an account</a></p>
     </form>
   );
 }

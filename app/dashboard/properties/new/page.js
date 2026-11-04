@@ -1,8 +1,8 @@
 import PropertyUploadForm from "@/components/PropertyUploadForm";
 
 export const metadata = {
-  title: "Add a property | Haven",
-  description: "Create a property listing for Haven.",
+  title: "Add a property | Voks-Kalis Global",
+  description: "Create a property listing for Voks-Kalis Global.",
 };
 
 export default function NewPropertyPage() {

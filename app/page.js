@@ -1,51 +1,36 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Categories from "@/components/Categories";
-import FeaturedProperties from "@/components/FeaturedProperties";
-import CategorySection from "@/components/CategorySection";
-import TrustBand from "@/components/TrustBand";
+import {
+  AboutSection,
+  ServicesSection,
+  VisionSection,
+  MarketplaceSection,
+  SellerCallout,
+  ConsultantSection,
+  InsightsSection,
+} from "@/components/HomeSections";
 import Footer from "@/components/Footer";
+import VideoCom from "@/components/VideoCom";
+import Testimonials from "@/components/Testimonials";
 
 export default function HomePage() {
   return (
-    <main>
-      <Navbar />
-      <Hero />
-      <Categories />
-      <FeaturedProperties />
+    <main className="">
+       <Navbar />
+           <Hero />
+           <Categories />
+           <AboutSection />
+           <ServicesSection />
+          <VideoCom />
+          <VisionSection />
+          <MarketplaceSection />
+           <SellerCallout />
+           <ConsultantSection />
+           <Testimonials />
+           <InsightsSection />
+           <Footer />
 
-      <CategorySection
-        id="estates"
-        eyebrow="Move-in ready"
-        title="Estates"
-        description="Gated developments and standalone homes across Lagos, inspected before listing."
-      />
-
-      <CategorySection
-        id="land"
-        eyebrow="Build or hold"
-        title="Land"
-        description="Titled plots with verified survey and registry documents."
-        tint
-      />
-
-      <CategorySection
-        id="shortlets"
-        eyebrow="By the night"
-        title="Shortlets"
-        description="Furnished apartments for business trips, weekends and relocations."
-      />
-
-      <CategorySection
-        id="commercial"
-        eyebrow="For business"
-        title="Commercial"
-        description="Offices, retail units and warehouse space in active trade corridors."
-        tint
-      />
-
-      <TrustBand />
-      <Footer />
     </main>
   );
 }

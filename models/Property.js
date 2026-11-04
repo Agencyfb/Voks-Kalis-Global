@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const propertySchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true, maxlength: 90 },
-  category: { type: String, required: true, enum: ["estates", "land", "shortlets", "commercial"] },
-  purpose: { type: String, required: true, enum: ["sale", "rent", "shortlet"] },
+  category: { type: String, required: true, enum: ["estates", "land", "shortlets", "commercial", "lands", "buildings", "rentals"] },
+  purpose: { type: String, required: true, enum: ["sale", "rent", "shortlet", "sales", "lease"] },
+  propertyType: { type: String, enum: ["residential", "commercial", "industrial", "raw-land", "agricultural-land"], default: "residential" },
   price: { type: Number, required: true, min: 1 },
   location: { type: String, required: true, trim: true, maxlength: 120 },
   propertyTitle: { type: String, trim: true, maxlength: 120, default: "" },
@@ -50,7 +51,10 @@ const propertySchema = new mongoose.Schema({
   soldBy: { type: String, trim: true, maxlength: 120, default: "" },
   soldAt: { type: Date, default: null },
   reviewedAt: { type: Date, default: null },
+  reviewNote: { type: String, trim: true, maxlength: 500, default: "" },
 }, { timestamps: true });
+
+propertySchema.index({ title: "text", location: "text" });
 
 const Property = mongoose.models.Property || mongoose.model("Property", propertySchema);
 
