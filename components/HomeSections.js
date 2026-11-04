@@ -6,6 +6,7 @@ import {
   House,
   KeyRound,
   MapPin,
+  MessageCircle,
   Search,
   Settings2,
   TrendingUp,
@@ -62,21 +63,24 @@ const MARKETPLACES = [
 
 const INSIGHTS = [
   {
+    slug: "sustainable-living-urban-cities",
     category: "TRENDS",
     title: "The Future of Sustainable Living in Urban Cities",
     description: "How modern architecture is shifting towards eco-friendly materials and smart home technology.",
     image: "photo-1600607687939-ce8a6c25118c",
   },
   {
+    slug: "first-time-homebuyer-guide",
     category: "GUIDES",
     title: "A Beginner's Guide to Buying Your First Home",
     description: "Everything you need to know before making the biggest investment of your life.",
     image: "photo-1600566753086-00f18fb6b3ea",
   },
   {
+    slug: "q3-property-market-report",
     category: "MARKET",
-    title: "Q3 Market Report: What to Expect in 2024",
-    description: "Analyzing the current trends and predicting the future of commercial and residential sales.",
+    title: "Q3 Market Report: What to Consider When Comparing Properties",
+    description: "A practical framework for weighing location, condition and long-term suitability in a changing market.",
     image: "photo-1486406146926-c627a92ad1ab",
   },
 ];
@@ -340,27 +344,21 @@ export function ConsultantSection() {
             All our teams are professional and competent in their fields and
             will help you realize your dream building with the excellent result.
           </p>
-          <form action="#contact" className="mt-6 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row">
             <a
               href={WHATSAPP_CONTACT}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-sm bg-brand-copper-dark px-5 py-3 text-xs font-semibold text-white shadow-md hover:bg-brand-copper"
+              aria-label="Message us on WhatsApp"
+              className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-copper-dark px-5 py-3 text-xs font-semibold text-white shadow-md hover:bg-brand-copper"
             >
+              <MessageCircle size={16} aria-hidden="true" />
               Message Us
             </a>
-            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-sm bg-[#E7D5CB] px-3 py-2.5 text-text-secondary">
-              <input
-                type="email"
-                aria-label="Your email address"
-                placeholder="Enter your email address..."
-                className="min-w-0 flex-1 bg-transparent text-[10px] text-text-primary outline-none placeholder:text-[#6C625D]"
-              />
-            </label>
-            <button type="submit" className="rounded-sm bg-[#292929] px-5 py-3 text-xs font-semibold text-white hover:bg-black">
-              Submit
-            </button>
-          </form>
+            <a href="/contact" className="rounded-sm bg-[#292929] px-5 py-3 text-center text-xs font-semibold text-white hover:bg-black">
+              Contact Us
+            </a>
+          </div>
         </div>
       </div>
       </ScrollReveal>
@@ -391,14 +389,14 @@ export function InsightsSection() {
                 <p className="text-[9px] font-semibold text-brand-copper-dark">{item.category}</p>
                 <h3 className="mt-2 text-sm font-semibold leading-snug text-[#10283A]">{item.title}</h3>
                 <p className="mt-2 line-clamp-2 text-[10px] leading-relaxed text-[#888888]">{item.description}</p>
-                <a href="/marketplace" className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold text-sky-500">
+                <a href={`/blog/${item.slug}`} className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold text-sky-500">
                   Read Article <ArrowDownRight size={12} />
                 </a>
               </div>
             </article>
           ))}
         </div>
-        <a href="/marketplace" className="mx-auto mt-7 flex w-fit items-center gap-2 text-xs font-semibold text-[#10283A]">
+        <a href="/blog" className="mx-auto mt-7 flex w-fit items-center gap-2 text-xs font-semibold text-[#10283A]">
           <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7B8790]">
             <ArrowUpRight size={16} />
           </span>

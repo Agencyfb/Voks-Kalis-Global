@@ -10,7 +10,7 @@ const LINKS = [
   { label: "Services", href: "/services" },
   { label: "Contact Us", href: "/contact" },
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Blog", href: "/#insights" },
+  { label: "Blog", href: "/blog" },
 ];
 
 function BrandLogo({ className = "" }) {

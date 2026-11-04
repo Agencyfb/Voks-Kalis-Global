@@ -14,7 +14,7 @@ const FOOTER_GROUPS = [
     links: [
       ["Marketplace", "/marketplace"],
       ["List a property", "/login"],
-      ["Insights", "/#insights"],
+      ["Blog", "/blog"],
     ],
   },
   {
