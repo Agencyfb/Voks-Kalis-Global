@@ -58,6 +58,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    loginFailedAttempts: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    loginLockUntil: {
+        type: Date,
+        default: null
+    },
     role:{
         type: String,
         default: "buyer",

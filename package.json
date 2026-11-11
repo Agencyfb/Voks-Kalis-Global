@@ -2,6 +2,9 @@
   "name": "haven-estates",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,7 +18,8 @@
     "mongoose": "^8.24.4",
     "next": "14.2.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "resend": "^6.37.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",

@@ -11,6 +11,7 @@ import {
   FileCheck2,
   HelpCircle,
   Home,
+  Image as ImageIcon,
   LayoutDashboard,
   LogOut,
   MapPin,
@@ -280,6 +281,9 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
               className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-xs transition-colors ${activeSection === "landlords" ? "bg-[#FBF2E9] font-semibold text-[#A15912]" : "text-[#555] hover:bg-[#F7F7F7]"}`}>
               <Building2 size={16} /> Landlords
             </button>
+            <a href="/admin/gallery" className="flex items-center gap-3 rounded-md px-3 py-2.5 text-xs text-[#555] transition-colors hover:bg-[#F7F7F7]">
+              <ImageIcon size={16} /> Gallery
+            </a>
           </nav>
 
           <div className="mt-auto grid gap-1 border-t border-[#EAEAEA] pt-4">

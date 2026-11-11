@@ -102,7 +102,7 @@ export default function LoginForm() {
         <div>
           <div className="mb-2 flex items-center justify-between">
             <label htmlFor="password" className="block text-sm font-medium text-ink">Password</label>
-            <a href="#forgot-password" className="text-xs font-medium text-forest hover:text-forest-light">Forgot password?</a>
+            <a href="/forgot-password" className="text-xs font-medium text-forest hover:text-forest-light">Forgot password?</a>
           </div>
           <div className="relative">
             <LockKeyhole size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-forest/45" />

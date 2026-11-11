@@ -32,6 +32,7 @@ const TESTIMONIALS = [
 
 export default function Testimonials() {
   const sectionRef = useRef(null);
+  const touchStartRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isInView, setIsInView] = useState(false);
   const [hasNavigated, setHasNavigated] = useState(false);
@@ -69,6 +70,28 @@ export default function Testimonials() {
     setActiveIndex((index) => (index + 1) % TESTIMONIALS.length);
   }
 
+  function handleTouchStart(event) {
+    const touch = event.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleTouchEnd(event) {
+    if (!touchStartRef.current) return;
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+    if (deltaX < 0) {
+      showNext();
+    } else {
+      showPrevious();
+    }
+  }
+
   return (
     <section
       ref={sectionRef}
@@ -82,6 +105,12 @@ export default function Testimonials() {
         role="region"
         aria-roledescription="carousel"
         aria-label="Client testimonials"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={() => {
+          touchStartRef.current = null;
+        }}
+        style={{ touchAction: "pan-y" }}
       >
         <div
           className="flex transition-transform duration-500 ease-in-out motion-reduce:transition-none"

@@ -2,6 +2,7 @@
 
 import { ChevronDown, House, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const PROPERTY_TYPES = [
   { value: "residential", label: "Residential" },
@@ -12,6 +13,7 @@ const PROPERTY_TYPES = [
 ];
 
 export default function Hero() {
+  const router = useRouter();
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(false);
   const propertyTypeRef = useRef(null);
@@ -55,16 +57,16 @@ export default function Hero() {
             className="mt-7 w-full max-w-[640px]"
           >
             <div className="flex gap-1 pl-2 text-xs font-medium">
-              <button type="button" className="flex-1 rounded-t-md bg-white px-3 py-2.5 text-center text-text-primary">
+              <button type="button" onClick={() => router.push("/register")} className="flex-1 rounded-t-md bg-white px-3 py-2.5 text-center text-text-primary">
                 Sell
               </button>
-              <button type="button" className="flex-1 rounded-t-md bg-white/40 px-3 py-2.5 text-center text-text-secondary hover:bg-white/70">
+              <button type="button" onClick={() => router.push("/marketplace")} className="flex-1 rounded-t-md bg-white/40 px-3 py-2.5 text-center text-text-secondary hover:bg-white/70">
                 Buy
               </button>
-              <button type="button" className="flex-1 rounded-t-md bg-white/40 px-3 py-2.5 text-center text-text-secondary hover:bg-white/70">
+              <button type="button" onClick={() => router.push("/marketplace")} className="flex-1 rounded-t-md bg-white/40 px-3 py-2.5 text-center text-text-secondary hover:bg-white/70">
                 Rent
               </button>
-              <button type="button" className="flex-1 rounded-t-md bg-white/40 px-3 py-2.5 text-center text-text-secondary hover:bg-white/70">
+              <button type="button" onClick={() => router.push("/register")} className="flex-1 rounded-t-md bg-white/40 px-3 py-2.5 text-center text-text-secondary hover:bg-white/70">
                 Join
               </button>
             </div>

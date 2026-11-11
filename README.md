@@ -85,6 +85,34 @@ stored in MongoDB, and passwords are PBKDF2-hashed with a per-user salt.
 Successful requests return a sanitized `user` object and set an HTTP-only
 `haven_session` cookie. Session tokens are currently held in memory and reset
 when the server restarts.
+Three consecutive incorrect password attempts lock that account out of login
+for 15 minutes. A successful login resets the failed-attempt counter.
+
+### Password reset email
+
+The login page's **Forgot password?** link sends a six-digit code using Resend.
+Set `RESEND_API_KEY` and `RESEND_FROM` (a sender address verified in Resend),
+and set `PASSWORD_RESET_SECRET` to a cryptographically random secret of at
+least 32 characters. Keep these values private in your deployment environment;
+do not commit them to source control. For example, generate the reset secret
+with `openssl rand -hex 32`.
+Without these settings, the request endpoint returns a configuration error and
+cannot send a code. Verify them in the environment where the app is running
+(local `.env.local` or your hosting provider's environment settings), then
+restart or redeploy the app.
+
+Codes expire after 10 minutes and allow up to five verification attempts.
+Requests are limited to three per account per hour. A successful code
+verification permits one password change, after which the user is sent back
+to the login page to sign in with the new password.
+
+### Client and project gallery
+
+The public `/gallery` page displays gallery images by category. Admins can add
+and remove images at `/admin/gallery`; uploads use signed Cloudinary requests
+and are limited to JPG, PNG or WEBP images up to 5 MB each. Client images
+require an administrator to confirm publication permission. Configure the
+Cloudinary environment variables above before uploading gallery images.
 
 ### Property file storage
 

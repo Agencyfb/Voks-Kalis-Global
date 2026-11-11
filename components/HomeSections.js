@@ -11,6 +11,7 @@ import {
   Settings2,
   TrendingUp,
 } from "lucide-react";
+import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const SERVICES = [
@@ -42,7 +43,7 @@ const MARKETPLACES = [
   {
     title: "Lands",
     subtitle: "Explore Available Landed Properties",
-    image: "photo-1500382017468-9049fed747ef",
+    image: "/New Eneka Road.png",
   },
   {
     title: "Buildings",
@@ -57,7 +58,7 @@ const MARKETPLACES = [
   {
     title: "Rentals",
     subtitle: "Explore Available Houses for Rent",
-    image: "photo-1486406146926-c627a92ad1ab",
+    image: "/Estate New.png",
   },
 ];
 
@@ -105,24 +106,25 @@ export function AboutSection() {
           </h2>
           <div className="mt-12 grid max-w-[385px] grid-cols-2 gap-[14px]">
             {[
-              ["30+", "Satisfied Customer"],
-              ["5k+", "Award winning"],
-              ["07+", "Years of Experience"],
-              ["33+", "Projects Delivered"],
-            ].map(([value, label], index) => (
-              <div
-                key={label}
-                className={`flex min-h-[148px] flex-col justify-center rounded-[20px] px-[22px] py-4 ${
+              { value: "30+", label: "Satisfied Customer", href: "/gallery?category=clients" },
+              { value: "50+", label: "Award winning", href: "/gallery?category=projects" },
+              { value: "07+", label: "Years of Experience", href: "/gallery" },
+              { value: "33+", label: "Projects Delivered", href: "/gallery?category=projects" },
+            ].map((item, index) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`flex min-h-[148px] flex-col justify-center rounded-[20px] px-[22px] py-4 transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A85B0B] ${
                   index === 1
                     ? "bg-[#A85B0B] text-white"
                     : "bg-[#F0EEF7] text-[#292929]"
                 }`}
               >
-                <p className="text-[36px] font-semibold leading-none">{value}</p>
+                <p className="text-[36px] font-semibold leading-none">{item.value}</p>
                 <p className={`mt-4 text-[14px] leading-5 ${index === 1 ? "text-white/90" : "text-[#292929]"}`}>
-                  {label}
+                  {item.label}
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -261,7 +263,7 @@ export function MarketplaceSection() {
               className="group relative aspect-[1.21/1] overflow-hidden rounded-[16px] bg-surface-subtle"
             >
               <img
-                src={`https://images.unsplash.com/${item.image}?w=1000&q=85`}
+                src={item.image.startsWith("/") ? item.image : `https://images.unsplash.com/${item.image}?w=1000&q=85`}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
