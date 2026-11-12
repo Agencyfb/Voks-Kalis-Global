@@ -470,6 +470,7 @@ export default function PropertyUploadForm() {
                     <option value="individual">Individual</option>
                     <option value="community">Community</option>
                     <option value="family">Family</option>
+                    <option value="company">Company</option>
                   </select>
                 </label>
               </div>

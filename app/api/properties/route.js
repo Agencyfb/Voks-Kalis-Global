@@ -10,18 +10,18 @@ const ALLOWED_ROLES = ["admin", "agent", "landlord"];
 const CATEGORIES = ["estates", "land", "shortlets", "commercial", "lands", "buildings", "rentals"];
 const PURPOSES = ["sale", "rent", "shortlet", "sales", "lease"];
 const PROPERTY_TYPES = ["residential", "commercial", "industrial", "raw-land", "agricultural-land"];
-const OWNERSHIP_TYPES = ["individual", "community", "family"];
+const OWNERSHIP_TYPES = ["individual", "community", "family", "company"];
 const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024;
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const DOCUMENT_TYPES = ["application/pdf", ...IMAGE_TYPES];
 const MAX_IMAGES = 10;
 const MAX_DOCUMENTS = 10;
-function isValidUpload(upload, allowedTypes, maximumBytes, folder, resourceType) {
+function isValidUpload(upload, allowedTypes, maximumBytes, resourceType) {
   if (!upload || typeof upload !== "object" || Array.isArray(upload)) return false;
   if (typeof upload.name !== "string" || !upload.name.trim() || upload.name.length > 160) return false;
   if (!allowedTypes.includes(upload.mimeType) || !Number.isSafeInteger(upload.bytes)
     || upload.bytes < 1 || upload.bytes > maximumBytes) return false;
-  if (typeof upload.publicId !== "string" || !upload.publicId.startsWith(`${folder}/`)) return false;
+  if (typeof upload.publicId !== "string" || !/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)*$/.test(upload.publicId)) return false;
   if (resourceType === "image") {
     if (upload.resourceType !== "image" || upload.uploadType !== "upload" || typeof upload.url !== "string") return false;
     try {
@@ -184,10 +184,10 @@ export async function POST(request) {
     return NextResponse.json({ error: "Choose who owns the property." }, { status: 400 });
   }
   const assetFolder = `haven/properties/${user._id}`;
-  if (!Array.isArray(body.images) || body.images.length < 2 || body.images.length > MAX_IMAGES || !body.images.every((image) => isValidUpload(image, IMAGE_TYPES, 2 * 1024 * 1024, assetFolder, "image"))) {
+  if (!Array.isArray(body.images) || body.images.length < 2 || body.images.length > MAX_IMAGES || !body.images.every((image) => isValidUpload(image, IMAGE_TYPES, 2 * 1024 * 1024, "image"))) {
     return NextResponse.json({ error: "Upload 2 to 10 valid property photos, each no larger than 2 MB." }, { status: 400 });
   }
-  if (!Array.isArray(body.documents) || body.documents.length < 1 || body.documents.length > MAX_DOCUMENTS || !body.documents.every((document) => isValidUpload(document, DOCUMENT_TYPES, 4 * 1024 * 1024, assetFolder, "raw"))) {
+  if (!Array.isArray(body.documents) || body.documents.length < 1 || body.documents.length > MAX_DOCUMENTS || !body.documents.every((document) => isValidUpload(document, DOCUMENT_TYPES, 4 * 1024 * 1024, "raw"))) {
     return NextResponse.json({ error: "Upload 1 to 10 valid supporting documents (PDF or image, up to 4 MB each)." }, { status: 400 });
   }
   const totalAttachmentBytes = [...body.images, ...body.documents]
@@ -227,7 +227,9 @@ export async function POST(request) {
         resource_type: upload.resourceType,
         type: upload.uploadType,
       });
-      if (resource.public_id !== upload.publicId || resource.bytes !== upload.bytes
+      const assetBelongsToUser = resource.asset_folder === assetFolder
+        || resource.public_id.startsWith(`${assetFolder}/`);
+      if (!assetBelongsToUser || resource.public_id !== upload.publicId || resource.bytes !== upload.bytes
         || resource.bytes > (upload.resourceType === "image" ? 2 * 1024 * 1024 : 4 * 1024 * 1024)
         || (upload.format && resource.format !== upload.format)
         || (upload.resourceType === "image" && resource.secure_url !== upload.url)) {

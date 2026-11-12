@@ -108,29 +108,42 @@ export async function DELETE(request) {
   try {
     const user = await getRequestUser(request);
     if (!user) return NextResponse.json({ error: "Sign in before removing uploaded files." }, { status: 401 });
+    if (body.assets.length === 0) return NextResponse.json({ removed: 0 });
 
-    const propertyFolder = `haven/properties/${user._id}/`;
-    const profileFolder = `haven/profiles/${user._id}/`;
-    const galleryFolder = `haven/gallery/${user._id}/`;
-    const assets = body.assets.filter((asset) => {
-      if (!asset || typeof asset.publicId !== "string") return false;
-      const propertyAsset = asset.publicId.startsWith(propertyFolder);
-      const profileAsset = asset.publicId.startsWith(profileFolder) && user.role !== "landlord";
-      const galleryAsset = asset.publicId.startsWith(galleryFolder) && GALLERY_ROLES.includes(user.role);
-      return (propertyAsset && PROPERTY_ROLES.includes(user.role)
-        || profileAsset && PROFILE_ROLES.includes(user.role)
-        || galleryAsset)
-        && (asset.resourceType === "image" || asset.resourceType === "raw")
-        && (asset.type === "upload" || asset.type === "authenticated");
-    });
+    const allowedFolders = [];
+    if (PROPERTY_ROLES.includes(user.role)) allowedFolders.push(`haven/properties/${user._id}`);
+    if (PROFILE_ROLES.includes(user.role)) allowedFolders.push(`haven/profiles/${user._id}`);
+    if (GALLERY_ROLES.includes(user.role)) allowedFolders.push(`haven/gallery/${user._id}`);
+    const cloudinary = getCloudinary();
+    const assets = await Promise.all(body.assets.map(async (asset) => {
+      if (!asset || typeof asset.publicId !== "string"
+        || !["image", "raw"].includes(asset.resourceType)
+        || !["upload", "authenticated"].includes(asset.type)) return null;
 
-    if (assets.length !== body.assets.length) {
+      const ownedFolder = allowedFolders.find((folder) => asset.publicId.startsWith(`${folder}/`));
+      if (ownedFolder) return asset;
+
+      try {
+        const resource = await cloudinary.api.resource(asset.publicId, {
+          resource_type: asset.resourceType,
+          type: asset.type,
+        });
+        return resource.public_id === asset.publicId && allowedFolders.includes(resource.asset_folder)
+          ? asset
+          : null;
+      } catch (error) {
+        if (error.http_code === 404) return null;
+        throw error;
+      }
+    }));
+    const authorizedAssets = assets.filter(Boolean);
+
+    if (authorizedAssets.length !== body.assets.length) {
       return NextResponse.json({ error: "One or more assets cannot be removed by this account." }, { status: 403 });
     }
 
-    if (assets.length === 0) return NextResponse.json({ removed: 0 });
-    const cloudinary = getCloudinary();
-    const results = await Promise.all(assets.map((asset) => cloudinary.uploader.destroy(asset.publicId, {
+    if (authorizedAssets.length === 0) return NextResponse.json({ removed: 0 });
+    const results = await Promise.all(authorizedAssets.map((asset) => cloudinary.uploader.destroy(asset.publicId, {
       resource_type: asset.resourceType,
       type: asset.type,
     })));
@@ -139,7 +152,7 @@ export async function DELETE(request) {
       console.error("Cloudinary asset cleanup incomplete:", failures);
       return NextResponse.json({ error: "Some uploaded files could not be removed." }, { status: 502 });
     }
-    return NextResponse.json({ removed: assets.length });
+    return NextResponse.json({ removed: authorizedAssets.length });
   } catch (error) {
     console.error("Cloudinary asset cleanup failed:", error);
     return NextResponse.json({ error: "Unable to remove uploaded files right now." }, { status: 500 });

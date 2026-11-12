@@ -11,7 +11,7 @@ const propertySchema = new mongoose.Schema({
   propertyAddress: { type: String, trim: true, maxlength: 300, default: "" },
   rootOfTitle: { type: String, trim: true, maxlength: 500, default: "" },
   previousOwner: { type: String, trim: true, maxlength: 160, default: "" },
-  ownershipType: { type: String, enum: ["", "individual", "community", "family"], default: "" },
+  ownershipType: { type: String, enum: ["", "individual", "community", "family", "company"], default: "" },
   description: { type: String, required: true, trim: true, maxlength: 1500 },
   beds: { type: Number, default: null, min: 0 },
   baths: { type: Number, default: null, min: 0 },
