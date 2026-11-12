@@ -61,7 +61,7 @@ export async function POST(request) {
       role: user.role,
     };
     const response = NextResponse.json({ user: safeUser }, { status: 201 });
-    response.cookies.set(sessionCookie.name, createSession(safeUser.id), sessionCookie.options);
+    response.cookies.set(sessionCookie.name, await createSession(safeUser.id), sessionCookie.options);
     return response;
   } catch (error) {
     if (error.code === 11000) {

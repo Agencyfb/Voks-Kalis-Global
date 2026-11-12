@@ -226,14 +226,22 @@ export function VisionSection() {
               To provide a seamless and secure platform that simplifies property trading for every client.
             </h2>
           </article>
-          <a
-            href={WHATSAPP_CONTACT}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-5 inline-flex items-center gap-1 rounded border border-brand-copper px-3 py-2 text-sm font-semibold text-brand-copper-dark transition-colors hover:bg-brand-copper-subtle"
-          >
-            Message Us <ArrowRight size={15} />
-          </a>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a
+              href={WHATSAPP_CONTACT}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 rounded border border-brand-copper px-3 py-2 text-sm font-semibold text-brand-copper-dark transition-colors hover:bg-brand-copper-subtle"
+            >
+              Message Us <ArrowRight size={15} />
+            </a>
+            <Link
+              href="/about"
+              className="inline-flex items-center gap-1 rounded border border-brand-copper px-3 py-2 text-sm font-semibold text-brand-copper-dark transition-colors hover:bg-brand-copper-subtle"
+            >
+              About Us <ArrowRight size={15} />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

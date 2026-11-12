@@ -14,7 +14,7 @@ export const metadata = {
 
 export default async function AdminPropertyReviewPage({ params }) {
   const sessionToken = cookies().get(sessionCookie.name)?.value;
-  const userId = sessionToken ? getSessionUserId(sessionToken) : null;
+  const userId = sessionToken ? await getSessionUserId(sessionToken) : null;
   if (!userId) redirect("/login");
 
   await connectDb();

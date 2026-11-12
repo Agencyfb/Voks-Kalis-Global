@@ -14,10 +14,9 @@ export const metadata = {
 
 export default async function AdminPage() {
   const sessionToken = cookies().get(sessionCookie.name)?.value;
-  const userId = sessionToken ? getSessionUserId(sessionToken) : null;
+  const userId = sessionToken ? await getSessionUserId(sessionToken) : null;
+  if (!userId) redirect("/login");
 
-  // if (!userId) redirect("/login");
-console.log("session: ", sessionToken, "userId: ", userId);
   await connectDb();
   const user = await User.findById(userId).select("firstName lastName role").lean();
   if (!user || user.role !== "admin") redirect("/dashboard");

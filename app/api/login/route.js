@@ -133,7 +133,7 @@ export async function POST(request) {
       role: user.role,
     };
     const response = NextResponse.json({ user: safeUser });
-    response.cookies.set(sessionCookie.name, createSession(safeUser.id), sessionCookie.options);
+    response.cookies.set(sessionCookie.name, await createSession(safeUser.id), sessionCookie.options);
     return response;
   } catch (error) {
     console.error("Account sign in failed:", error);
