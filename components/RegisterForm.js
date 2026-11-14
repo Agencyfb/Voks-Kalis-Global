@@ -196,7 +196,7 @@ export default function RegisterForm() {
       <div className="mt-6">
         <label className="flex items-start gap-3 text-sm leading-relaxed text-ink/65">
           <input type="checkbox" name="terms" checked={values.terms} onChange={handleChange} className="mt-1 h-4 w-4 accent-forest" />
-          <span>I agree to Voks-Kalis Global&apos;s <a href="#terms" className="font-medium text-forest underline underline-offset-2">terms</a> and <a href="#privacy" className="font-medium text-forest underline underline-offset-2">privacy policy</a>.</span>
+          <span>I agree to Voks-Kalis Global&apos;s <a href="/terms-of-service" className="font-medium text-forest underline underline-offset-2">terms</a> and <a href="/privacy-policy" className="font-medium text-forest underline underline-offset-2">privacy policy</a>.</span>
         </label>
         {errors.terms && <p className="mt-1.5 text-xs text-clay">{errors.terms}</p>}
       </div>

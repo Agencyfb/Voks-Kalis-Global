@@ -20,8 +20,8 @@ const FOOTER_GROUPS = [
   {
     title: "Legal",
     links: [
-      ["Privacy policy", "#"],
-      ["Terms of service", "#"],
+      ["Privacy policy", "/privacy-policy"],
+      ["Terms of service", "/terms-of-service"],
     ],
   },
 ];
@@ -95,9 +95,9 @@ export default function Footer() {
         <div className="mt-12 flex flex-col gap-3 border-t border-white/15 pt-5 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} VOKS-KALIS GLOBAL INVESTMENT. All rights reserved.</p>
           <div className="flex gap-5">
-            <a href="#" className="hover:text-white">Privacy Policy</a>
-            <a href="#" className="hover:text-white">Terms of Service</a>
-            <a href="#" className="hover:text-white">Cookie Policy</a>
+            <a href="/privacy-policy" className="hover:text-white">Privacy Policy</a>
+            <a href="/terms-of-service" className="hover:text-white">Terms of Service</a>
+            <a href="/privacy-policy#cookies" className="hover:text-white">Cookie Policy</a>
           </div>
         </div>
       </div>
