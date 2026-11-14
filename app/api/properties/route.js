@@ -26,7 +26,10 @@ function isValidUpload(upload, allowedTypes, maximumBytes, resourceType) {
     if (upload.resourceType !== "image" || upload.uploadType !== "upload" || typeof upload.url !== "string") return false;
     try {
       const url = new URL(upload.url);
-      return url.protocol === "https:" && url.hostname.endsWith(".res.cloudinary.com");
+      const cloudinaryHost = url.hostname === "res.cloudinary.com"
+        || url.hostname.endsWith(".res.cloudinary.com")
+        || /^res-\d+\.cloudinary\.com$/.test(url.hostname);
+      return url.protocol === "https:" && cloudinaryHost;
     } catch {
       return false;
     }
