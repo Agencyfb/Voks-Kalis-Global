@@ -2,21 +2,26 @@
 
 import { useMemo, useState } from "react";
 import { ArrowRight, Clock3, Search } from "lucide-react";
-import { BLOG_ARTICLES, BLOG_CATEGORIES } from "@/data/blogArticles";
+import { BLOG_CATEGORIES } from "@/data/blogArticles";
 
-const FEATURED_ARTICLE = BLOG_ARTICLES[0];
 const PAGE_SIZE = 6;
 
-export default function BlogJournal() {
+export default function BlogJournal({ articles }) {
   const [category, setCategory] = useState(BLOG_CATEGORIES[0]);
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [email, setEmail] = useState("");
 
+  const featuredArticle = articles.find((article) => article.featured) || articles[0];
+  const categories = useMemo(() => [
+    BLOG_CATEGORIES[0],
+    ...new Set([...BLOG_CATEGORIES.slice(1), ...articles.map((article) => article.category)]),
+  ], [articles]);
   const filteredArticles = useMemo(() => {
     const searchTerm = query.trim().toLowerCase();
-    return BLOG_ARTICLES.slice(1).filter((article) => {
-      const matchesCategory = category === BLOG_CATEGORIES[0] || article.category === category;
+    return articles.filter((article) => {
+      if (article.slug === featuredArticle?.slug) return false;
+      const matchesCategory = category === categories[0] || article.category === category;
       const matchesQuery = !searchTerm || [
         article.title,
         article.excerpt,
@@ -25,7 +30,7 @@ export default function BlogJournal() {
       ].some((value) => value.toLowerCase().includes(searchTerm));
       return matchesCategory && matchesQuery;
     });
-  }, [category, query]);
+  }, [articles, category, categories, featuredArticle, query]);
   const visibleArticles = filteredArticles.slice(0, visibleCount);
 
   function subscribe(event) {
@@ -54,28 +59,30 @@ export default function BlogJournal() {
             </div>
           </div>
 
-          <article className="mt-7 grid overflow-hidden rounded-lg bg-[#FBF2E9] md:grid-cols-[1.35fr_1fr]">
-            <a href={`/blog/${FEATURED_ARTICLE.slug}`} className="block min-h-[230px] overflow-hidden sm:min-h-[300px] lg:min-h-[355px]" aria-label={`Read ${FEATURED_ARTICLE.title}`}>
-              <img src={FEATURED_ARTICLE.image} alt={FEATURED_ARTICLE.imageAlt} className="h-full min-h-[230px] w-full object-cover transition-transform duration-500 hover:scale-[1.02] sm:min-h-[300px] lg:min-h-[355px]" />
-            </a>
-            <div className="flex flex-col items-start justify-center p-6 sm:p-8 lg:p-9">
-              <p className="text-[9px] font-semibold uppercase tracking-wide text-brand-copper-dark">{FEATURED_ARTICLE.eyebrow}</p>
-              <h2 className="mt-3 font-display text-2xl font-semibold leading-tight text-[#292724] sm:text-[28px]">{FEATURED_ARTICLE.title}</h2>
-              <p className="mt-3 text-xs leading-relaxed text-[#666]">{FEATURED_ARTICLE.excerpt}</p>
-              <p className="mt-3 flex items-center gap-1.5 text-[9px] text-[#777]">
-                {FEATURED_ARTICLE.published} · <Clock3 size={11} aria-hidden="true" /> {FEATURED_ARTICLE.readTime} min read
-              </p>
-              <a href={`/blog/${FEATURED_ARTICLE.slug}`} className="mt-5 inline-flex items-center gap-1 rounded bg-brand-copper-dark px-3 py-2 text-[10px] font-semibold text-white transition-colors hover:bg-brand-copper">
-                Read the story <ArrowRight size={13} aria-hidden="true" />
+          {featuredArticle && (
+            <article className="mt-7 grid overflow-hidden rounded-lg bg-[#FBF2E9] md:grid-cols-[1.35fr_1fr]">
+              <a href={`/blog/${featuredArticle.slug}`} className="block min-h-[230px] overflow-hidden sm:min-h-[300px] lg:min-h-[355px]" aria-label={`Read ${featuredArticle.title}`}>
+                <img src={featuredArticle.image} alt={featuredArticle.imageAlt} className="h-full min-h-[230px] w-full object-cover transition-transform duration-500 hover:scale-[1.02] sm:min-h-[300px] lg:min-h-[355px]" />
               </a>
-            </div>
-          </article>
+              <div className="flex flex-col items-start justify-center p-6 sm:p-8 lg:p-9">
+                <p className="text-[9px] font-semibold uppercase tracking-wide text-brand-copper-dark">{featuredArticle.eyebrow}</p>
+                <h2 className="mt-3 font-display text-2xl font-semibold leading-tight text-[#292724] sm:text-[28px]">{featuredArticle.title}</h2>
+                <p className="mt-3 text-xs leading-relaxed text-[#666]">{featuredArticle.excerpt}</p>
+                <p className="mt-3 flex items-center gap-1.5 text-[9px] text-[#777]">
+                  {featuredArticle.published} · <Clock3 size={11} aria-hidden="true" /> {featuredArticle.readTime} min read
+                </p>
+                <a href={`/blog/${featuredArticle.slug}`} className="mt-5 inline-flex items-center gap-1 rounded bg-brand-copper-dark px-3 py-2 text-[10px] font-semibold text-white transition-colors hover:bg-brand-copper">
+                  Read the story <ArrowRight size={13} aria-hidden="true" />
+                </a>
+              </div>
+            </article>
+          )}
         </section>
 
         <section className="mx-auto max-w-7xl px-5 pb-12 sm:px-8 lg:px-10" aria-labelledby="journal-articles-title">
           <div className="flex flex-col gap-4 border-b border-[#E9E7E4] pb-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter articles by category">
-              {BLOG_CATEGORIES.map((item) => (
+              {categories.map((item) => (
                 <button
                   key={item}
                   type="button"

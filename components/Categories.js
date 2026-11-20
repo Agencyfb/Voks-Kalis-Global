@@ -58,7 +58,7 @@ export default function Categories() {
         href="/login"
         className="mx-auto mt-5 flex min-h-[42px] max-w-[374px] items-center justify-center gap-1 rounded-sm bg-[#263238] px-5 py-2 text-center text-xs font-semibold text-white transition-colors hover:bg-[#37474F]"
       >
-        <span className="text-brand-copper">Are your property owner?</span>
+        <span className="text-brand-copper">Are you a property owner?</span>
         <span>Sell/Rent for FREE</span>
       </a>
     </section>

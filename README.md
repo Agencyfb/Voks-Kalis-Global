@@ -114,6 +114,19 @@ and are limited to JPG, PNG or WEBP images up to 5 MB each. Client images
 require an administrator to confirm publication permission. Configure the
 Cloudinary environment variables above before uploading gallery images.
 
+### Homepage testimonials
+
+Admins can add, edit and remove homepage testimonials at `/admin/testimonials`.
+Each entry includes the client image, benefit received, testimony, 1–5 star
+rating and an Instagram post link. Images use signed Cloudinary uploads.
+
+### Journal management
+
+Admins can create, edit, publish, save drafts and remove journal articles at
+`/admin/blog`. Article bodies use the Quill rich-text editor, and cover images
+are uploaded to Cloudinary. Published articles appear on `/blog` and their
+individual article pages.
+
 ### Property file storage
 
 Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and

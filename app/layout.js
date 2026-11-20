@@ -13,6 +13,10 @@ export const metadata = {
   title: "Voks-Kalis Global | Real Estate",
   description:
     "Your trusted partner for residential and commercial real estate, property management and development.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }) {

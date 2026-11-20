@@ -25,6 +25,78 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
+.quill-editor .ql-toolbar.ql-snow,
+.quill-editor .ql-container.ql-snow {
+  border-color: var(--border-default);
+}
+
+.quill-editor .ql-container {
+  min-height: 340px;
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.quill-editor .ql-editor {
+  min-height: 340px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.blog-article-content {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.blog-article-content > * + * {
+  margin-top: 1rem;
+}
+
+.blog-article-content h2,
+.blog-article-content h3 {
+  color: #292724;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.blog-article-content h2 {
+  margin-top: 2rem;
+  font-size: 1.5rem;
+}
+
+.blog-article-content h3 {
+  margin-top: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.blog-article-content ul,
+.blog-article-content ol {
+  padding-left: 1.5rem;
+}
+
+.blog-article-content ul {
+  list-style: disc;
+}
+
+.blog-article-content ol {
+  list-style: decimal;
+}
+
+.blog-article-content li[data-list="bullet"] {
+  list-style-type: disc;
+}
+
+.blog-article-content blockquote {
+  border-left: 3px solid var(--brand-copper);
+  padding-left: 1rem;
+  color: #666;
+}
+
+.blog-article-content a {
+  color: var(--brand-copper-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 ::selection {
   background-color: var(--brand-copper);
   color: var(--text-inverse);

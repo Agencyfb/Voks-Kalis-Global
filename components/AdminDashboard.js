@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   BadgeCheck,
   Bell,
+  BookOpen,
   Building2,
   CircleDollarSign,
   Clock3,
@@ -19,6 +20,7 @@ import {
   Search,
   Settings,
   ShieldAlert,
+  Star,
   Users,
 } from "lucide-react";
 import { formatPrice } from "@/data/properties";
@@ -284,6 +286,12 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
             <a href="/admin/gallery" className="flex items-center gap-3 rounded-md px-3 py-2.5 text-xs text-[#555] transition-colors hover:bg-[#F7F7F7]">
               <ImageIcon size={16} /> Gallery
             </a>
+            <a href="/admin/testimonials" className="flex items-center gap-3 rounded-md px-3 py-2.5 text-xs text-[#555] transition-colors hover:bg-[#F7F7F7]">
+              <Star size={16} /> Testimonials
+            </a>
+            <a href="/admin/blog" className="flex items-center gap-3 rounded-md px-3 py-2.5 text-xs text-[#555] transition-colors hover:bg-[#F7F7F7]">
+              <BookOpen size={16} /> Blog
+            </a>
           </nav>
 
           <div className="mt-auto grid gap-1 border-t border-[#EAEAEA] pt-4">
@@ -311,6 +319,12 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
                 {activeSection === "overview" ? "Keep quality high, move reviews forward, and bring more homes to market." : portfolioSubtitle}
               </p>
             </div>
+            <a href="/admin/testimonials" className="inline-flex items-center gap-2 rounded-md border border-[#D6B38F] bg-white px-3.5 py-2.5 text-xs font-semibold text-[#8A4B0B] transition-colors hover:bg-[#FBF2E9] lg:hidden">
+              <Star size={14} /> Manage testimonials
+            </a>
+            <a href="/admin/blog" className="inline-flex items-center gap-2 rounded-md border border-[#D6B38F] bg-white px-3.5 py-2.5 text-xs font-semibold text-[#8A4B0B] transition-colors hover:bg-[#FBF2E9] lg:hidden">
+              <BookOpen size={14} /> Manage blog
+            </a>
             <a href="/dashboard/properties/new" className="inline-flex items-center gap-2 rounded-md bg-[#A15912] px-3.5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-[#78400B]">
               <Plus size={14} /> Upload property
             </a>

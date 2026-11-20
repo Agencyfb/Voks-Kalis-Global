@@ -2,40 +2,40 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Star, ThumbsUp } from "lucide-react";
+import DEFAULT_TESTIMONIALS from "@/data/testimonials";
 
-const TESTIMONIALS = [
-  {
-    image: "/testimonial-jennifer.jpg",
-    imageAlt: "Mrs Jennifer seated at her desk",
-    name: "Mrs Jennifer",
-    detail: "Acquired 2 lots through us",
-    quote:
-      "Buying my first home was easier than I imagined. The team was professional, supportive, and guided me through every step. I’m grateful for their excellent service!",
-  },
-  {
-    image: "/testimonial-ebuka.jpg",
-    imageAlt: "Mr Ebuka wearing a red cap",
-    name: "Mr Ebuka",
-    detail: "Bought land",
-    quote:
-      "I never thought finding my dream home could be this seamless. Their team made the experience enjoyable, stress-free, and memorable.",
-  },
-  {
-    image: "/testimonial-tony.jpg",
-    imageAlt: "Engr. Tony smiling for a portrait",
-    name: "Engr. Tony",
-    detail: "Bought land",
-    quote:
-      "Their attention to detail and commitment to customer satisfaction were impressive. They understood exactly what I wanted and helped me find the perfect property.",
-  },
-];
+function testimonialRating(testimonial) {
+  return Number.isInteger(testimonial?.rating) && testimonial.rating >= 1 && testimonial.rating <= 5
+    ? testimonial.rating
+    : 5;
+}
 
 export default function Testimonials() {
   const sectionRef = useRef(null);
   const touchStartRef = useRef(null);
+  const [testimonials, setTestimonials] = useState(DEFAULT_TESTIMONIALS);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isInView, setIsInView] = useState(false);
   const [hasNavigated, setHasNavigated] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    async function loadTestimonials() {
+      try {
+        const response = await fetch("/api/testimonials");
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || "Unable to load testimonials.");
+        if (active && result.testimonials?.length) {
+          setTestimonials(result.testimonials);
+          setActiveIndex(0);
+        }
+      } catch (error) {
+        console.error("Homepage testimonials load failed:", error);
+      }
+    }
+    loadTestimonials();
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -62,12 +62,12 @@ export default function Testimonials() {
 
   function showPrevious() {
     setHasNavigated(true);
-    setActiveIndex((index) => (index - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+    setActiveIndex((index) => (index - 1 + testimonials.length) % testimonials.length);
   }
 
   function showNext() {
     setHasNavigated(true);
-    setActiveIndex((index) => (index + 1) % TESTIMONIALS.length);
+    setActiveIndex((index) => (index + 1) % testimonials.length);
   }
 
   function handleTouchStart(event) {
@@ -116,11 +116,11 @@ export default function Testimonials() {
           className="flex transition-transform duration-500 ease-in-out motion-reduce:transition-none"
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
-          {TESTIMONIALS.map((testimonial, index) => (
+          {testimonials.map((testimonial, index) => (
             <article
-              key={testimonial.name}
+              key={testimonial.id || testimonial.name}
               aria-roledescription="slide"
-              aria-label={`${index + 1} of ${TESTIMONIALS.length}`}
+              aria-label={`${index + 1} of ${testimonials.length}`}
               aria-hidden={index !== activeIndex}
               data-slide-entered={hasNavigated && index === activeIndex}
               className="relative h-auto min-h-[790px] w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#ffffff_55%,#dedede_100%)] sm:h-[820px] lg:h-[675px]"
@@ -149,7 +149,7 @@ export default function Testimonials() {
 
               <img
                 src={testimonial.image}
-                alt={testimonial.imageAlt}
+                alt={testimonial.imageAlt || testimonial.name}
                 className="testimonial-portrait absolute left-[15%] top-[48px] h-[300px] w-[72%] object-cover object-center max-sm:relative max-sm:left-auto max-sm:top-auto max-sm:mx-auto max-sm:mt-[56px] max-sm:block max-sm:h-[260px] max-sm:w-[82%] sm:left-[18%] sm:top-[65px] sm:h-[430px] sm:w-[55%] lg:left-[18.75%] lg:top-[51px] lg:h-[574px] lg:w-[29.7%]"
               />
 
@@ -161,16 +161,26 @@ export default function Testimonials() {
                 <blockquote className="mt-7 text-base leading-relaxed text-[#171717] sm:mt-10 sm:text-lg lg:text-xl">
                   {testimonial.quote}
                 </blockquote>
+                {testimonial.instagramUrl && (
+                  <a
+                    href={testimonial.instagramUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-5 inline-flex text-xs font-semibold text-[#A15912] underline underline-offset-2"
+                  >
+                    View Instagram testimony
+                  </a>
+                )}
               </div>
             </article>
           ))}
         </div>
         <div className="absolute inset-x-0 top-[690px] flex flex-col items-center gap-4 max-sm:relative max-sm:inset-auto max-sm:mt-12 sm:top-[748px] lg:left-[62.5%] lg:right-[3%] lg:top-[523px] lg:flex-row lg:items-center lg:justify-between lg:gap-0">
           <div
-            aria-label="Rated 5 out of 5 stars"
+            aria-label={`Rated ${testimonialRating(testimonials[activeIndex])} out of 5 stars`}
             className="flex h-[60px] w-[228px] items-center justify-center gap-1 bg-white text-[#FF7918] sm:h-[75px] sm:w-[228px]"
           >
-            {Array.from({ length: 5 }, (_, starIndex) => (
+            {Array.from({ length: testimonialRating(testimonials[activeIndex]) }, (_, starIndex) => (
               <Star
                 key={starIndex}
                 size={29}
@@ -209,7 +219,7 @@ export default function Testimonials() {
           </div>
         </div>
         <p className="sr-only" aria-live="polite">
-          Testimonial {activeIndex + 1} of {TESTIMONIALS.length}
+          Testimonial {activeIndex + 1} of {testimonials.length}
         </p>
       </div>
     </section>

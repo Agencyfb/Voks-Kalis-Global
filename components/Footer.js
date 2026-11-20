@@ -29,7 +29,7 @@ const FOOTER_GROUPS = [
 export default function Footer() {
   const socialLinks = [
     { Icon: Facebook, label: "Facebook", href: "https://www.facebook.com/profile.php?id=61553402184259" },
-    { Icon: Instagram, label: "Instagram", href: "https://www.instagram.com/vokskalis/" },
+    { Icon: Instagram, label: "Instagram", href: "https://www.instagram.com/vokskalisglobal/?hl=en" },
     { Icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/company/100426279/voks-kalisgloballimited" },
   ];
 

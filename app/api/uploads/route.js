@@ -8,6 +8,8 @@ export const runtime = "nodejs";
 const PROFILE_ROLES = ["admin", "agent", "buyer"];
 const PROPERTY_ROLES = ["admin", "agent", "landlord"];
 const GALLERY_ROLES = ["admin"];
+const TESTIMONIAL_ROLES = ["admin"];
+const BLOG_ROLES = ["admin"];
 const FILE_RULES = {
   "property-image": {
     resourceType: "image",
@@ -34,11 +36,23 @@ const FILE_RULES = {
     maximumBytes: 5 * 1024 * 1024,
     mimeTypes: { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" },
   },
+  "testimonial-image": {
+    resourceType: "image",
+    maximumBytes: 5 * 1024 * 1024,
+    mimeTypes: { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" },
+  },
+  "blog-image": {
+    resourceType: "image",
+    maximumBytes: 5 * 1024 * 1024,
+    mimeTypes: { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" },
+  },
 };
 
 function getUploadFolder(user, purpose) {
   if (purpose === "profile-photo") return `haven/profiles/${user._id}`;
   if (purpose === "gallery-image") return `haven/gallery/${user._id}`;
+  if (purpose === "testimonial-image") return `haven/testimonials/${user._id}`;
+  if (purpose === "blog-image") return `haven/blog/${user._id}`;
   return `haven/properties/${user._id}`;
 }
 
@@ -61,7 +75,9 @@ export async function POST(request) {
     if (!user) return NextResponse.json({ error: "Sign in before uploading files." }, { status: 401 });
     const allowedRoles = body.purpose === "profile-photo"
       ? PROFILE_ROLES
-      : body.purpose === "gallery-image" ? GALLERY_ROLES : PROPERTY_ROLES;
+      : body.purpose === "gallery-image" ? GALLERY_ROLES
+        : body.purpose === "testimonial-image" ? TESTIMONIAL_ROLES
+          : body.purpose === "blog-image" ? BLOG_ROLES : PROPERTY_ROLES;
     if (!allowedRoles.includes(user.role)) {
       return NextResponse.json({ error: "Your account cannot upload this file." }, { status: 403 });
     }
@@ -114,6 +130,8 @@ export async function DELETE(request) {
     if (PROPERTY_ROLES.includes(user.role)) allowedFolders.push(`haven/properties/${user._id}`);
     if (PROFILE_ROLES.includes(user.role)) allowedFolders.push(`haven/profiles/${user._id}`);
     if (GALLERY_ROLES.includes(user.role)) allowedFolders.push(`haven/gallery/${user._id}`);
+    if (TESTIMONIAL_ROLES.includes(user.role)) allowedFolders.push(`haven/testimonials/${user._id}`);
+    if (BLOG_ROLES.includes(user.role)) allowedFolders.push(`haven/blog/${user._id}`);
     const cloudinary = getCloudinary();
     const assets = await Promise.all(body.assets.map(async (asset) => {
       if (!asset || typeof asset.publicId !== "string"

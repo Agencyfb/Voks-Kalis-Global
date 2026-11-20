@@ -131,8 +131,7 @@ export function AboutSection() {
 
         <div className="pt-0 lg:pt-[31px]">
           <p className="mb-[31px] max-w-[420px] pl-2 text-[16px] leading-[24px] text-[#909090]">
-            Find Your Property, we&apos;ve put together Verified Properties and
-            easier for acquisition
+           { "Find your property, we've made acquisition easier for You."}
           </p>
           <div className="relative h-[390px] w-full sm:h-[477px]">
             <img

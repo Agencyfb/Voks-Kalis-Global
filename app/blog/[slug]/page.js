@@ -2,14 +2,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { BLOG_ARTICLES, getBlogArticle } from "@/data/blogArticles";
+import { getPublishedBlogPost, getPublishedBlogPosts } from "@/lib/blog";
 
-export function generateStaticParams() {
-  return BLOG_ARTICLES.map(({ slug }) => ({ slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
-  const article = getBlogArticle(params.slug);
+  const article = await getPublishedBlogPost(params.slug);
   if (!article) return { title: "Article not found | Voks-Kalis Global" };
   return {
     title: `${article.title} | The Voks Journal`,
@@ -22,11 +20,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function BlogArticlePage({ params }) {
-  const article = getBlogArticle(params.slug);
+export default async function BlogArticlePage({ params }) {
+  const article = await getPublishedBlogPost(params.slug);
   if (!article) notFound();
 
-  const otherArticles = BLOG_ARTICLES.filter((item) => item.slug !== article.slug);
+  const otherArticles = (await getPublishedBlogPosts()).filter((item) => item.slug !== article.slug);
   const relatedArticles = otherArticles
     .filter((item) => item.category === article.category)
     .slice(0, 3);
@@ -55,14 +53,10 @@ export default function BlogArticlePage({ params }) {
           <img src={article.image} alt={article.imageAlt} className="mt-7 max-h-[520px] w-full rounded-lg object-cover" />
 
           <div className="mx-auto mt-8 max-w-2xl">
-            {article.sections.map((section) => (
-              <section key={section.heading} className="mb-8">
-                <h2 className="text-xl font-semibold text-[#292724] sm:text-2xl">{section.heading}</h2>
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph} className="mt-4 text-sm leading-7 text-[#555]">{paragraph}</p>
-                ))}
-              </section>
-            ))}
+            <div
+              className="blog-article-content"
+              dangerouslySetInnerHTML={{ __html: article.contentHtml }}
+            />
             <aside className="rounded-lg bg-[#FBF2E9] p-5 sm:p-6">
               <h2 className="text-lg font-semibold text-[#292724]">Thinking about your next property move?</h2>
               <p className="mt-2 text-xs leading-relaxed text-[#666]">Our team can help you explore available properties and discuss the next steps.</p>
