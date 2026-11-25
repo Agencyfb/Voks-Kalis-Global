@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, Building2, CalendarDays, Check, Clock3, Edit3, Home, MapPin, Plus, Settings, ShieldAlert, Tag, X } from "lucide-react";
@@ -202,7 +203,7 @@ export default function AgentPropertyStatus({ agentName = "Agent" }) {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {visibleProperties.map((property) => (
                     <article key={property.id} className="overflow-hidden rounded-lg border border-[#e9e7e4] bg-white">
-                      {property.image ? <img src={property.image} alt={property.title} className="h-36 w-full object-cover" /> : <div className="flex h-36 items-center justify-center bg-[#f1efec] text-[#9c9892]"><Building2 size={28} /></div>}
+                      {property.image ? <Image unoptimized width={1200} height={800} src={property.image} alt={property.title} className="h-36 w-full object-cover" /> : <div className="flex h-36 items-center justify-center bg-[#f1efec] text-[#9c9892]"><Building2 size={28} /></div>}
                       <div className="p-3">
                         <div className="flex items-center justify-between gap-2">
                           <p className="truncate font-semibold text-[#925615]">{formatPrice(property.price)}</p>

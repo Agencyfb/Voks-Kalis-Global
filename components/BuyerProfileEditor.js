@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useRef, useState } from "react";
 import { uploadFileToCloudinary } from "@/lib/cloudinaryUpload";
@@ -198,7 +199,7 @@ export default function BuyerProfileEditor({ buyerName }) {
       <header className="sticky top-0 z-20 h-[62px] border-b border-[#E5E5E5] bg-white">
         <div className="flex h-full items-center justify-between px-4 sm:px-7 lg:px-8">
           <div className="flex min-w-0 items-center gap-5">
-            <a href="/" className="flex shrink-0 items-center" aria-label="Voks-Kalis Global home"><img src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[150px] object-contain" /></a>
+            <a href="/" className="flex shrink-0 items-center" aria-label="Voks-Kalis Global home"><Image width={825} height={240} src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[150px] object-contain" /></a>
             <div className="hidden border-l border-[#E5E5E5] pl-5 text-xs text-[#777] sm:block">Workspace <span className="px-1 text-[#B5B5B5]">/</span> Account settings</div>
           </div>
           <div className="flex items-center gap-3 text-xs text-[#666] sm:gap-5">
@@ -248,7 +249,7 @@ export default function BuyerProfileEditor({ buyerName }) {
                   <section className="rounded-lg border border-[#E3E3E3] bg-white p-4 text-center">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-[#FBF2E9] font-display text-xl font-semibold text-[#A15912]">
                       {profile.profilePhoto
-                        ? <img src={profile.profilePhoto} alt={`${displayName} profile`} className="h-full w-full object-cover" />
+                        ? <Image unoptimized width={1200} height={800} src={profile.profilePhoto} alt={`${displayName} profile`} className="h-full w-full object-cover" />
                         : getInitials(profile)}
                     </div>
                     <p className="mt-2.5 text-xs font-semibold text-[#333]">{displayName}</p>

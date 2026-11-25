@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -15,7 +16,7 @@ const LINKS = [
 
 function BrandLogo({ className = "" }) {
   return (
-    <img
+    <Image width={825} height={240}
       src="/voks-kalis-logo.png"
       alt="Voks-Kalis Global"
       className={`h-9 w-[124px] object-contain ${className}`}

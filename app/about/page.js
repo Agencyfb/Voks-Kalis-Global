@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -75,7 +76,7 @@ export default function AboutPage() {
               Your real estate partner
             </p>
           </div>
-          <img
+          <Image width={1200} height={800}
             src="/about-building.jpg"
             alt="Contemporary residential property in a landscaped setting"
             className="aspect-[4/3] w-full rounded-lg object-cover"
@@ -188,7 +189,7 @@ export default function AboutPage() {
 
       <section className="bg-[#F8F8F8] px-5 py-12 sm:px-8 sm:py-16 lg:px-10 lg:py-16">
         <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-14">
-          <img
+          <Image width={1200} height={800}
             src="/about-consultation.png"
             alt="A real estate consultant discussing plans with clients"
             className="aspect-square w-full rounded-lg object-cover"

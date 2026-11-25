@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Star, ThumbsUp } from "lucide-react";
@@ -147,7 +148,7 @@ export default function Testimonials() {
                 What our clients say about us
               </div>
 
-              <img
+              <Image unoptimized width={1200} height={800}
                 src={testimonial.image}
                 alt={testimonial.imageAlt || testimonial.name}
                 className="testimonial-portrait absolute left-[15%] top-[48px] h-[300px] w-[72%] object-cover object-center max-sm:relative max-sm:left-auto max-sm:top-auto max-sm:mx-auto max-sm:mt-[56px] max-sm:block max-sm:h-[260px] max-sm:w-[82%] sm:left-[18%] sm:top-[65px] sm:h-[430px] sm:w-[55%] lg:left-[18.75%] lg:top-[51px] lg:h-[574px] lg:w-[29.7%]"

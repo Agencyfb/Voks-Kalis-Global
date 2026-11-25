@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import { ArrowLeft, BookOpen, ImagePlus, Pencil, Trash2, Upload, X } from "lucide-react";
@@ -255,7 +256,7 @@ export default function AdminBlogManager() {
                 Image description (alt text)
                 <input name="imageAlt" value={form.imageAlt} onChange={updateField} maxLength={180} required className={FIELD_CLASS} placeholder="Describe the cover image" />
               </label>
-              {form.image && !file && <img src={form.image} alt={form.imageAlt || "Current article cover"} className="h-[78px] w-32 rounded-md object-cover" />}
+              {form.image && !file && <Image unoptimized width={1200} height={800} src={form.image} alt={form.imageAlt || "Current article cover"} className="h-[78px] w-32 rounded-md object-cover" />}
             </div>
           </div>
 
@@ -308,7 +309,7 @@ export default function AdminBlogManager() {
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {articles.map((article) => (
                 <article key={article.id} className="flex gap-4 rounded-xl border border-[#E3E3E3] bg-white p-4">
-                  <img src={article.image} alt="" className="h-20 w-24 shrink-0 rounded-md object-cover" />
+                  <Image unoptimized width={1200} height={800} src={article.image} alt="" className="h-20 w-24 shrink-0 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">

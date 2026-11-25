@@ -1,3 +1,4 @@
+import Image from "next/image";
 const CATEGORIES = [
   {
     title: "Residential",
@@ -39,7 +40,7 @@ export default function Categories() {
             href={category.href}
             className="group min-h-[148px] rounded-xl border border-[#E6E8EA] bg-gradient-to-br from-white to-[#F1F8FC] p-4 transition-shadow hover:shadow-md sm:p-5"
           >
-            <img
+            <Image unoptimized width={1200} height={800}
               src={category.image}
               alt={category.alt}
               className="h-11 w-12 object-contain object-left"

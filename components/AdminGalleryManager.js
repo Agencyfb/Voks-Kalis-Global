@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowLeft, ImagePlus, Trash2, Upload } from "lucide-react";
@@ -222,7 +223,7 @@ export default function AdminGalleryManager() {
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((item) => (
                 <article key={item.id} className="overflow-hidden rounded-xl border border-[#E3E3E3] bg-white">
-                  <img src={item.imageUrl} alt={item.caption || (item.category === "clients" ? "Satisfied client" : "Delivered project")} className="aspect-[4/3] w-full bg-[#F0EEF7] object-cover" loading="lazy" />
+                  <Image unoptimized width={1200} height={800} src={item.imageUrl} alt={item.caption || (item.category === "clients" ? "Satisfied client" : "Delivered project")} className="aspect-[4/3] w-full bg-[#F0EEF7] object-cover" loading="lazy" />
                   <div className="flex items-start justify-between gap-3 p-3">
                     <div className="min-w-0">
                       <p className="truncate text-xs font-semibold">{item.caption || (item.category === "clients" ? "Satisfied client" : "Project delivered")}</p>

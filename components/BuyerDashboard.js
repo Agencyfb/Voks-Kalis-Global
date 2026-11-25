@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import {
@@ -38,7 +39,7 @@ function PropertyTile({ property, saved, onToggleSave }) {
       <div className="relative">
         <a href={property.detailHref} aria-label={`View ${property.title}`}>
           {getImage(property)
-            ? <img src={getImage(property)} alt={property.title} className="h-28 w-full object-cover sm:h-32" />
+            ? <Image unoptimized width={1200} height={800} src={getImage(property)} alt={property.title} className="h-28 w-full object-cover sm:h-32" />
             : <div className="flex h-28 items-center justify-center bg-[#F0EDE9] text-xs text-[#888] sm:h-32">Photo unavailable</div>}
         </a>
         <button type="button" onClick={() => onToggleSave(property)} aria-label={saved ? `Remove ${property.title} from saved homes` : `Save ${property.title}`} aria-pressed={saved}
@@ -149,7 +150,7 @@ export default function BuyerDashboard() {
       <header className="sticky top-0 z-20 h-[60px] border-b border-[#E7E5E2] bg-white">
         <div className="flex h-full items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-5">
-            <a href="/" className="shrink-0" aria-label="Voks-Kalis Global home"><img src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[145px] object-contain" /></a>
+            <a href="/" className="shrink-0" aria-label="Voks-Kalis Global home"><Image width={825} height={240} src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[145px] object-contain" /></a>
             <div className="hidden border-l border-[#E7E5E2] pl-5 text-[10px] text-[#777] sm:block">Workspace <span className="px-1 text-[#BBB]">/</span> Your home search</div>
           </div>
           <div className="flex items-center gap-3 text-[9px] text-[#777] sm:gap-5">
@@ -193,7 +194,7 @@ export default function BuyerDashboard() {
             </div>
             {heroProperty && getImage(heroProperty) ? (
               <a href={heroProperty.detailHref} className="hidden overflow-hidden rounded-md md:block">
-                <img src={getImage(heroProperty)} alt={heroProperty.title} className="h-[105px] w-full object-cover" />
+                <Image unoptimized width={1200} height={800} src={getImage(heroProperty)} alt={heroProperty.title} className="h-[105px] w-full object-cover" />
               </a>
             ) : <div className="hidden h-[105px] rounded-md bg-[#F0EDE9] md:block" />}
           </section>
@@ -248,7 +249,7 @@ export default function BuyerDashboard() {
                   {savedProperties.slice(0, 3).map((property) => (
                     <div key={property.id} className="flex items-center gap-2 py-2 first:pt-1">
                       <a href={property.detailHref} className="h-10 w-12 shrink-0 overflow-hidden rounded">
-                        {getImage(property) ? <img src={getImage(property)} alt="" className="h-full w-full object-cover" /> : <div className="h-full bg-[#F0EDE9]" />}
+                        {getImage(property) ? <Image unoptimized width={1200} height={800} src={getImage(property)} alt="" className="h-full w-full object-cover" /> : <div className="h-full bg-[#F0EDE9]" />}
                       </a>
                       <div className="min-w-0 flex-1">
                         <a href={property.detailHref} className="block truncate text-[9px] font-medium text-[#333] hover:text-[#A15912]">{property.title}</a>

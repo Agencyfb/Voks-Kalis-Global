@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Check, FileText, ImagePlus, MapPin, Upload, X } from "lucide-react";
@@ -519,7 +520,7 @@ export default function PropertyUploadForm() {
               </label>
               {photos[0] && (
                 <div className="group relative mt-3 overflow-hidden rounded-md">
-                  <img src={photos[0].preview} alt={photos[0].name} className="h-28 w-full object-cover" />
+                  <Image unoptimized width={1200} height={800} src={photos[0].preview} alt={photos[0].name} className="h-28 w-full object-cover" />
                   <button type="button" aria-label={`Remove ${photos[0].name}`} onClick={() => removePhoto(0)} className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-ink hover:text-clay"><X size={14} /></button>
                 </div>
               )}
@@ -531,7 +532,7 @@ export default function PropertyUploadForm() {
                   const photoIndex = index + 1;
                   return (
                     <div key={`${photo.name}-${photoIndex}`} className="group relative overflow-hidden rounded-md">
-                      <img src={photo.preview} alt={photo.name} className="h-14 w-full object-cover" />
+                      <Image unoptimized width={1200} height={800} src={photo.preview} alt={photo.name} className="h-14 w-full object-cover" />
                       <button type="button" aria-label={`Remove ${photo.name}`} onClick={() => removePhoto(photoIndex)} className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/90 text-ink opacity-0 transition group-hover:opacity-100 focus:opacity-100"><X size={12} /></button>
                     </div>
                   );

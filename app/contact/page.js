@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Mail, MessageCircle, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -74,7 +75,7 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-7xl items-start gap-7 lg:grid-cols-[minmax(260px,.72fr)_minmax(0,1.28fr)] lg:gap-9">
           <ScrollReveal className="contact-scroll-reveal">
             <aside>
-              <img
+              <Image width={1200} height={800}
                 src="/contact-building.jpg"
                 alt="Voks-Kalis residential property in a landscaped setting"
                 className="aspect-[4/3] w-full rounded-lg object-cover"

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import { ArrowDown, Image as ImageIcon } from "lucide-react";
@@ -111,7 +112,7 @@ export default function GalleryBrowser({ initialCategory = "" }) {
               {items.map((item) => (
                 <article key={item.id} className="group overflow-hidden rounded-2xl border border-[#E9E5E0] bg-white shadow-[0_8px_24px_rgba(24,48,68,.06)]">
                   <div className="aspect-[4/3] overflow-hidden bg-[#F0EEF7]">
-                    <img
+                    <Image unoptimized width={1200} height={800}
                       src={item.imageUrl}
                       alt={item.caption || (item.category === "clients" ? "Satisfied client" : "Delivered project")}
                       loading="lazy"

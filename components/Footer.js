@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Facebook, Instagram, Linkedin, MessageCircle } from "lucide-react";
 
 const FOOTER_GROUPS = [
@@ -39,7 +40,7 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <a href="/" aria-label="Voks-Kalis Global home">
-              <img
+              <Image width={825} height={240}
                 src="/voks-kalis-logo.png"
                 alt="Voks-Kalis Global"
                 className="h-12 w-[170px] object-contain brightness-0 invert"

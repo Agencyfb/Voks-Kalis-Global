@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -235,7 +236,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
         <div className="flex h-full items-center justify-between px-4 sm:px-7 lg:px-8">
           <div className="flex min-w-0 items-center gap-5">
             <a href="/" className="flex shrink-0 items-center" aria-label="Voks-Kalis Global home">
-              <img src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[150px] object-contain" />
+              <Image width={825} height={240} src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[150px] object-contain" />
             </a>
             <div className="hidden border-l border-[#E5E5E5] pl-5 text-xs text-[#777] sm:block">
               Workspace <span className="px-1 text-[#B5B5B5]">/</span> Property operations
@@ -364,7 +365,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
                 <div className="grid gap-3 xl:grid-cols-2">
                   {pendingProperties.slice(0, 2).map((property) => (
                     <article key={property.id} className="flex min-w-0 gap-3 border-t border-[#EFEFEF] pt-3">
-                      <img src={property.image} alt="" className="h-[76px] w-[92px] shrink-0 rounded-md object-cover" />
+                      <Image unoptimized width={1200} height={800} src={property.image} alt="" className="h-[76px] w-[92px] shrink-0 rounded-md object-cover" />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[11px] font-semibold text-[#292929]">{property.title} · {formatPrice(property.price)}</p>
                         <p className="mt-1 truncate text-[9px] text-[#777]">{property.location} · {property.submittedBy}</p>
@@ -432,7 +433,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
                       <tr key={property.id} className="align-middle">
                         <td className="px-2.5 py-2.5">
                           <div className="flex min-w-0 items-center gap-2.5">
-                            <img src={property.image} alt="" className="h-10 w-12 shrink-0 rounded object-cover" />
+                            <Image unoptimized width={1200} height={800} src={property.image} alt="" className="h-10 w-12 shrink-0 rounded object-cover" />
                             <div className="min-w-0">
                               <p className="max-w-[240px] truncate text-[10px] font-semibold text-[#292929]">{property.title}</p>
                               <p className="mt-0.5 truncate text-[9px] text-[#777]">{property.location} · {getPropertyFeatures(property)}</p>
@@ -575,7 +576,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
                 <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {expandedProperty.images.map((image, index) => (
                     <a key={`${image.name}-${index}`} href={image.url} target="_blank" rel="noreferrer" className="group overflow-hidden rounded border border-[#ECECEC]">
-                      <img src={image.url} alt={image.name} className="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-105" />
+                      <Image unoptimized width={1200} height={800} src={image.url} alt={image.name} className="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-105" />
                       <span className="block truncate px-2 py-1.5 text-[9px] text-[#666]">{image.name}</span>
                     </a>
                   ))}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -50,7 +51,7 @@ export default async function BlogArticlePage({ params }) {
             </p>
           </header>
 
-          <img src={article.image} alt={article.imageAlt} className="mt-7 max-h-[520px] w-full rounded-lg object-cover" />
+          <Image unoptimized width={1200} height={800} src={article.image} alt={article.imageAlt} className="mt-7 max-h-[520px] w-full rounded-lg object-cover" />
 
           <div className="mx-auto mt-8 max-w-2xl">
             <div
@@ -76,7 +77,7 @@ export default async function BlogArticlePage({ params }) {
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {recommendations.map((item) => (
                 <a key={item.slug} href={`/blog/${item.slug}`} className="group overflow-hidden rounded-lg border border-[#E9E7E4] bg-white p-3">
-                  <img src={item.image} alt={item.imageAlt} className="h-40 w-full rounded-md object-cover" loading="lazy" />
+                  <Image unoptimized width={1200} height={800} src={item.image} alt={item.imageAlt} className="h-40 w-full rounded-md object-cover" loading="lazy" />
                   <p className="mt-3 text-[9px] font-semibold uppercase tracking-wide text-brand-copper-dark">{item.eyebrow}</p>
                   <h3 className="mt-1 text-sm font-semibold text-[#292724] group-hover:text-brand-copper-dark">{item.title}</h3>
                   <p className="mt-2 text-[10px] leading-relaxed text-[#777]">{item.excerpt}</p>

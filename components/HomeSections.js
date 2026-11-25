@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
+import Image from "next/image";
 
 const SERVICES = [
   {
@@ -134,17 +135,17 @@ export function AboutSection() {
            { "Find your property, we've made acquisition easier for You."}
           </p>
           <div className="relative h-[390px] w-full sm:h-[477px]">
-            <img
+            <Image width={1200} height={800}
               src="/trust-city-growth.png"
               alt="City skyline with property investment growth"
               className="absolute left-0 top-0 h-[136px] w-full rounded-[20px] object-cover object-center shadow-[0_8px_18px_rgba(63,83,190,.22)] sm:h-[164px]"
             />
-            <img
+            <Image width={1200} height={800}
               src="/trust-resort.png"
               alt="Guests relaxing at a resort"
               className="absolute left-0 top-[150px] h-[140px] w-[45%] rounded-[20px] object-cover object-[center_68%] shadow-[0_8px_18px_rgba(63,83,190,.22)] sm:top-[181px] sm:h-[166px] sm:w-[198px]"
             />
-            <img
+            <Image width={1200} height={800}
               src="/trust-surveyors.png"
               alt="Surveyors measuring a plot of land"
               className="absolute right-0 top-[150px] h-[230px] w-[52%] rounded-[20px] object-cover object-center shadow-[0_8px_18px_rgba(63,83,190,.22)] sm:top-[181px] sm:h-[295px] sm:w-[226px]"
@@ -206,7 +207,7 @@ export function VisionSection() {
     <section className="bg-white px-5 py-14 sm:px-8 lg:px-10 lg:py-16">
       <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-14">
         <div className="flex min-h-[300px] items-center justify-center sm:min-h-[390px]">
-          <img
+          <Image width={521} height={388}
             src="/vision-property.png"
             alt="Property consultant presenting a home for sale"
             className="max-h-[390px] w-full object-contain"
@@ -269,7 +270,7 @@ export function MarketplaceSection() {
               href="/marketplace"
               className="group relative aspect-[1.21/1] overflow-hidden rounded-[16px] bg-surface-subtle"
             >
-              <img
+              <Image unoptimized width={1200} height={800}
                 src={item.image.startsWith("/") ? item.image : `https://images.unsplash.com/${item.image}?w=1000&q=85`}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -307,7 +308,7 @@ export function SellerCallout() {
             Sell Your Property <ArrowRight size={13} />
           </a>
         </div>
-        <img
+        <Image width={1200} height={800}
           src="/seller-property.png"
           alt="A family meeting at a home for sale"
           className="ml-4 hidden h-[155px] w-[210px] object-contain sm:block"
@@ -323,13 +324,13 @@ export function ConsultantSection() {
       <ScrollReveal className="mx-auto max-w-[1300px]">
       <div className="grid items-center gap-10 xl:grid-cols-[minmax(0,542px)_minmax(0,1fr)] xl:gap-[212px]">
         <div className="group relative mx-auto w-full max-w-[542px] xl:mx-0">
-          <img
+          <Image width={1200} height={800}
             src="/consultant-building.png"
             alt="Modern glass building used by the property consultancy"
             className="aspect-[.92/1] w-full rounded-sm object-cover"
           />
           <div className="absolute bottom-0 right-0 w-[66%] bg-[#242424] px-4 py-5 text-center text-white shadow-xl transition duration-500 group-hover:-translate-y-3 sm:group-hover:bg-brand-copper-dark sm:bottom-[20%] sm:right-[-8%] sm:w-[58%] sm:px-6 sm:py-6 xl:bottom-auto xl:right-[-157px] xl:top-[22%] xl:h-[341px] xl:w-[315px] xl:px-8 xl:py-9">
-            <img
+            <Image width={1200} height={800}
               src="/Geraldine.png"
               alt=""
               className="mx-auto h-16 w-16 rounded-full border-4 border-white object-cover xl:h-[150px] xl:w-[150px]"
@@ -389,7 +390,7 @@ export function InsightsSection() {
         <div className="mt-7 grid gap-4 md:grid-cols-3">
           {INSIGHTS.map((item) => (
             <article key={item.title} className="overflow-hidden rounded-xl bg-white p-3 shadow-[0_6px_18px_rgba(24,48,68,.06)]">
-              <img
+              <Image unoptimized width={1200} height={800}
                 src={`https://images.unsplash.com/${item.image}?w=800&q=80`}
                 alt=""
                 className="h-[145px] w-full rounded-lg object-cover"

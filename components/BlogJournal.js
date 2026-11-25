@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useMemo, useState } from "react";
 import { ArrowRight, Clock3, Search } from "lucide-react";
@@ -62,7 +63,7 @@ export default function BlogJournal({ articles }) {
           {featuredArticle && (
             <article className="mt-7 grid overflow-hidden rounded-lg bg-[#FBF2E9] md:grid-cols-[1.35fr_1fr]">
               <a href={`/blog/${featuredArticle.slug}`} className="block min-h-[230px] overflow-hidden sm:min-h-[300px] lg:min-h-[355px]" aria-label={`Read ${featuredArticle.title}`}>
-                <img src={featuredArticle.image} alt={featuredArticle.imageAlt} className="h-full min-h-[230px] w-full object-cover transition-transform duration-500 hover:scale-[1.02] sm:min-h-[300px] lg:min-h-[355px]" />
+                <Image unoptimized width={1200} height={800} src={featuredArticle.image} alt={featuredArticle.imageAlt} className="h-full min-h-[230px] w-full object-cover transition-transform duration-500 hover:scale-[1.02] sm:min-h-[300px] lg:min-h-[355px]" />
               </a>
               <div className="flex flex-col items-start justify-center p-6 sm:p-8 lg:p-9">
                 <p className="text-[9px] font-semibold uppercase tracking-wide text-brand-copper-dark">{featuredArticle.eyebrow}</p>
@@ -117,7 +118,7 @@ export default function BlogJournal({ articles }) {
               {visibleArticles.map((article) => (
                 <article key={article.slug} className="overflow-hidden rounded-lg border border-[#E9E7E4] bg-white p-3 transition-shadow hover:shadow-[0_8px_24px_rgba(0,0,0,.07)]">
                   <a href={`/blog/${article.slug}`} className="block overflow-hidden rounded-md">
-                    <img src={article.image} alt={article.imageAlt} className="h-[150px] w-full object-cover transition-transform duration-500 hover:scale-[1.03] sm:h-[165px]" loading="lazy" />
+                    <Image unoptimized width={1200} height={800} src={article.image} alt={article.imageAlt} className="h-[150px] w-full object-cover transition-transform duration-500 hover:scale-[1.03] sm:h-[165px]" loading="lazy" />
                   </a>
                   <div className="px-1 pb-1 pt-3">
                     <p className="text-[9px] font-semibold uppercase tracking-wide text-brand-copper-dark">{article.eyebrow}</p>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { BedDouble, Bath, Ruler, ShieldCheck } from "lucide-react";
 import { formatPrice } from "@/data/properties";
 
@@ -38,7 +39,7 @@ export default function PropertyCard({ property }) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-forest/10 bg-white transition-shadow hover:shadow-xl">
       <div className="relative aspect-[4/3] overflow-hidden">
-        <img
+        <Image unoptimized width={1200} height={800}
           src={image}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -59,7 +60,7 @@ export default function PropertyCard({ property }) {
         <div className="flex gap-1 overflow-x-auto border-b border-forest/10 p-2" aria-label={`${images.length} property photos`}>
           {images.map((photo, index) => (
             <a key={index} href={photo} target="_blank" rel="noreferrer" aria-label={`Open photo ${index + 1} for ${title}`} className="shrink-0">
-              <img src={photo} alt={`${title}, photo ${index + 1}`} className="h-12 w-16 object-cover" />
+              <Image unoptimized width={1200} height={800} src={photo} alt={`${title}, photo ${index + 1}`} className="h-12 w-16 object-cover" />
             </a>
           ))}
         </div>

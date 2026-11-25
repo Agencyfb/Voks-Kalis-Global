@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -150,7 +151,7 @@ export default function ServicesPage() {
         >
           <ScrollReveal className="service-scroll-reveal mx-auto max-w-7xl px-5 py-9 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
             <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-14">
-              <img
+              <Image unoptimized width={1200} height={800}
                 src={service.image}
                 alt={service.imageAlt}
                 className={`aspect-[4/3] w-full rounded-lg object-cover ${

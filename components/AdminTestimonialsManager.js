@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import { ArrowLeft, ImagePlus, Pencil, Star, Trash2, Upload, X } from "lucide-react";
@@ -214,7 +215,7 @@ export default function AdminTestimonialsManager() {
             <span className="mt-1 text-[10px] text-[#888]">JPG, PNG or WEBP · up to 5 MB</span>
             <input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} className="sr-only" />
           </label>
-          {currentImage && !file && <img src={currentImage} alt="Current testifier" className="mt-3 h-24 w-24 rounded-md object-cover" />}
+          {currentImage && !file && <Image unoptimized width={1200} height={800} src={currentImage} alt="Current testifier" className="mt-3 h-24 w-24 rounded-md object-cover" />}
 
           {error && <p role="alert" className="mt-4 rounded-md border border-[#EBCBCB] bg-[#FCEDED] px-3 py-2.5 text-xs text-[#9A3434]">{error}</p>}
           {notice && <p role="status" className="mt-4 rounded-md border border-[#CFE4D5] bg-[#EFF8F1] px-3 py-2.5 text-xs text-[#246B4D]">{notice}</p>}
@@ -237,7 +238,7 @@ export default function AdminTestimonialsManager() {
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {testimonials.map((item) => (
                 <article key={item.id} className="flex gap-4 rounded-xl border border-[#E3E3E3] bg-white p-4">
-                  <img src={item.imageUrl} alt={item.name} className="h-20 w-20 shrink-0 rounded-md object-cover" />
+                  <Image unoptimized width={1200} height={800} src={item.imageUrl} alt={item.name} className="h-20 w-20 shrink-0 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">

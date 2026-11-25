@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -144,7 +145,7 @@ export default function AdminPropertyReview({ propertyId, adminName }) {
         <div className="flex h-full items-center justify-between px-4 sm:px-7 lg:px-8">
           <div className="flex min-w-0 items-center gap-5">
             <a href="/" className="flex shrink-0 items-center" aria-label="Voks-Kalis Global home">
-              <img src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[150px] object-contain" />
+              <Image width={825} height={240} src="/voks-kalis-logo.png" alt="Voks-Kalis Global" className="h-9 w-auto max-w-[150px] object-contain" />
             </a>
             <div className="hidden border-l border-[#E5E5E5] pl-5 text-xs text-[#777] sm:block">
               Workspace <span className="px-1 text-[#B5B5B5]">/</span> Property operations
@@ -211,12 +212,12 @@ export default function AdminPropertyReview({ propertyId, adminName }) {
                   <section aria-label="Property photo preview" className="overflow-hidden rounded-lg">
                     {images.length > 0 ? (
                       <>
-                        <img src={images[activeImage]?.url || images[0].url} alt={images[activeImage]?.name || property.title} className="aspect-[16/7] w-full bg-[#EEE] object-cover" />
+                        <Image unoptimized width={1200} height={800} src={images[activeImage]?.url || images[0].url} alt={images[activeImage]?.name || property.title} className="aspect-[16/7] w-full bg-[#EEE] object-cover" />
                         {images.length > 1 && (
                           <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
                             {images.slice(0, 4).map((image, index) => (
                               <button key={`${image.name}-${index}`} type="button" onClick={() => setActiveImage(index)} aria-label={`Show property photo ${index + 1}`} aria-pressed={activeImage === index} className={`overflow-hidden rounded border-2 ${activeImage === index ? "border-[#A15912]" : "border-transparent"}`}>
-                                <img src={image.url} alt={image.name} className="aspect-[2/1] w-full object-cover" />
+                                <Image unoptimized width={1200} height={800} src={image.url} alt={image.name} className="aspect-[2/1] w-full object-cover" />
                               </button>
                             ))}
                           </div>

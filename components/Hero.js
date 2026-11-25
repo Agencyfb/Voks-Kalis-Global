@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { ChevronDown, House, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -32,7 +33,7 @@ export default function Hero() {
   return (
     <section id="top" className="px-4 pt-4 sm:px-7 lg:px-10 lg:pt-1">
       <div className="relative z-20 mx-auto flex min-h-[430px] max-w-7xl items-center rounded-b-2xl rounded-t-lg bg-[#C7E5FC] sm:min-h-[450px] lg:min-h-[430px]">
-        <img
+        <Image width={1200} height={800}
           src="/hero-building.png"
           alt=""
           aria-hidden="true"

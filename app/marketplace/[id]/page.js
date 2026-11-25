@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import mongoose from "mongoose";
 import { BedDouble, Bath, MapPin, Ruler } from "lucide-react";
@@ -57,7 +58,7 @@ export default async function MarketplacePropertyPage({ params }) {
         </a>
         <div className="mt-6 grid gap-2 sm:grid-cols-2">
           {images.map((image, index) => (
-            <img
+            <Image unoptimized width={1200} height={800}
               key={index}
               src={image}
               alt={`${property.title}, photo ${index + 1}`}
