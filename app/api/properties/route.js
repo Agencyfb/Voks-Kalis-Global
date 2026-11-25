@@ -64,7 +64,7 @@ export async function GET(request) {
   }
 
   try {
-    const properties = await Property.find({ submittedBy: user._id })
+    const properties = await Property.find({ submittedBy: user._id, deletedAt: null })
       .select("title category propertyType purpose price location image status createdAt reviewedAt reviewNote")
       .sort({ createdAt: -1 })
       .lean();
@@ -120,7 +120,7 @@ export async function PATCH(request) {
   }
 
   try {
-    const property = await Property.findOne({ _id: body.id, submittedBy: user._id });
+    const property = await Property.findOne({ _id: body.id, submittedBy: user._id, deletedAt: null });
     if (!property) return NextResponse.json({ error: "Property not found in your listings." }, { status: 404 });
 
     const classificationChanged = property.category !== category

@@ -157,7 +157,7 @@ export default async function MarketplacePage({ searchParams = {} }) {
   };
 
   await connectDb();
-  const approvedProperties = await Property.find({ status: "approved" })
+  const approvedProperties = await Property.find({ status: "approved", deletedAt: null })
     .select("title category propertyType purpose price location propertyAddress beds baths areaSqm image images")
     .sort({ reviewedAt: -1, createdAt: -1 })
     .lean();

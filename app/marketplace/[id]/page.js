@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
     return { title: "Property not found | Voks-Kalis Global" };
   }
   await connectDb();
-  const property = await Property.findOne({ _id: params.id, status: "approved" })
+  const property = await Property.findOne({ _id: params.id, status: "approved", deletedAt: null })
     .select("title location")
     .lean();
 
@@ -35,7 +35,7 @@ export default async function MarketplacePropertyPage({ params }) {
   if (!mongoose.isValidObjectId(params.id)) notFound();
 
   await connectDb();
-  const property = await Property.findOne({ _id: params.id, status: "approved" })
+  const property = await Property.findOne({ _id: params.id, status: "approved", deletedAt: null })
     .select("title category purpose propertyType price location propertyAddress description beds baths areaSqm features landmarks landUse image images")
     .lean();
 

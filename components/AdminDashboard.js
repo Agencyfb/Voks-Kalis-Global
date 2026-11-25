@@ -22,6 +22,7 @@ import {
   Settings,
   ShieldAlert,
   Star,
+  Trash2,
   Users,
 } from "lucide-react";
 import { formatPrice } from "@/data/properties";
@@ -31,6 +32,7 @@ const QUEUES = [
   { id: "approved", label: "Approved", icon: BadgeCheck },
   { id: "declined", label: "Declined", icon: ShieldAlert },
   { id: "sold", label: "Sold", icon: CircleDollarSign },
+  { id: "deleted", label: "Deleted", icon: Trash2 },
 ];
 
 const PAGE_SIZE = 5;
@@ -63,6 +65,7 @@ function getStatusClasses(status) {
     approved: "bg-[#EAF5EE] text-[#246B4D]",
     declined: "bg-[#FCEDED] text-[#B33B3B]",
     sold: "bg-[#EDF2FA] text-[#405A8A]",
+    deleted: "bg-[#F1F1F1] text-[#666666]",
   }[status] || "bg-[#F5F5F5] text-[#666666]";
 }
 
@@ -83,6 +86,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
   const [expandedPropertyId, setExpandedPropertyId] = useState("");
   const [expandedProperty, setExpandedProperty] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [deletingPropertyId, setDeletingPropertyId] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -105,21 +109,30 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
     return () => { active = false; };
   }, []);
 
+  const activeProperties = useMemo(
+    () => properties.filter((property) => !property.deletedAt),
+    [properties],
+  );
   const counts = useMemo(() => Object.fromEntries(
     QUEUES.map(({ id }) => [id, properties.filter((property) => property.workflowStatus === id).length]),
   ), [properties]);
   const pendingProperties = useMemo(
-    () => properties.filter((property) => property.workflowStatus === "pending"),
-    [properties],
+    () => activeProperties.filter((property) => property.workflowStatus === "pending"),
+    [activeProperties],
   );
   const totalSoldValue = useMemo(
-    () => properties.filter((property) => property.workflowStatus === "sold")
+    () => activeProperties.filter((property) => property.workflowStatus === "sold")
       .reduce((total, property) => total + Number(property.price || 0), 0),
-    [properties],
+    [activeProperties],
   );
 
   const visibleProperties = useMemo(() => properties.filter((property) => {
-    if (activeQueue !== "all" && property.workflowStatus !== activeQueue) return false;
+    if (activeQueue === "deleted") {
+      if (!property.deletedAt) return false;
+    } else {
+      if (property.deletedAt) return false;
+      if (activeQueue !== "all" && property.workflowStatus !== activeQueue) return false;
+    }
     if (category !== "all" && property.category !== category) return false;
     const query = search.trim().toLowerCase();
     return !query || [property.title, property.location, property.submittedBy, property.assignedAgent, property.soldBy]
@@ -132,12 +145,12 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
   }, [landlords, search]);
   const agents = useMemo(() => {
     const names = new Set();
-    properties.forEach((property) => {
+    activeProperties.forEach((property) => {
       if (property.assignedAgent) names.add(property.assignedAgent);
       if (property.submittedByRole === "agent" && property.submittedBy) names.add(property.submittedBy);
     });
     return Array.from(names).map((name) => {
-      const agentProperties = properties.filter((property) => (
+      const agentProperties = activeProperties.filter((property) => (
         property.assignedAgent === name
         || (property.submittedByRole === "agent" && property.submittedBy === name)
       ));
@@ -149,7 +162,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
         sold: agentProperties.filter((property) => property.workflowStatus === "sold").length,
       };
     });
-  }, [properties]);
+  }, [activeProperties]);
 
   const pageCount = Math.max(1, Math.ceil(visibleProperties.length / PAGE_SIZE));
   const pageProperties = visibleProperties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -177,6 +190,32 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
       setProperties((current) => current.map((property) => property.id === id ? result.property : property));
     } catch (error) {
       setAdminError(error.message);
+    }
+  }
+
+  async function deleteProperty(property) {
+    if (!window.confirm(`Move "${property.title}" to Deleted? It will be hidden from the marketplace, but its files will be retained and it can be restored.`)) return;
+
+    setAdminError("");
+    setDeletingPropertyId(property.id);
+    try {
+      const response = await fetch("/api/admin/properties", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: property.id }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Unable to delete this property.");
+
+      setProperties((current) => current.map((item) => item.id === property.id ? result.property : item));
+      if (expandedPropertyId === property.id) {
+        setExpandedPropertyId("");
+        setExpandedProperty(null);
+      }
+    } catch (error) {
+      setAdminError(error.message);
+    } finally {
+      setDeletingPropertyId("");
     }
   }
 
@@ -266,7 +305,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
             </button>
             <button type="button" onClick={() => navigateTo("properties")} aria-current={activeSection === "properties" ? "page" : undefined}
               className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-xs transition-colors ${activeSection === "properties" ? "bg-[#FBF2E9] font-semibold text-[#A15912]" : "text-[#555] hover:bg-[#F7F7F7]"}`}>
-              <Home size={16} /> <span className="flex-1">Properties</span><span className="text-[10px] text-[#888]">{properties.length}</span>
+              <Home size={16} /> <span className="flex-1">Properties</span><span className="text-[10px] text-[#888]">{activeProperties.length}</span>
             </button>
             <button type="button" onClick={() => navigateTo("review", "pending")} aria-current={activeSection === "review" ? "page" : undefined}
               className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-xs transition-colors ${activeSection === "review" ? "bg-[#FBF2E9] font-semibold text-[#A15912]" : "text-[#555] hover:bg-[#F7F7F7]"}`}>
@@ -336,7 +375,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
           {activeSection === "overview" && (
             <div className="mb-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
               {[
-                { label: "Total properties", value: properties.length, note: `${agents.length} active ${agents.length === 1 ? "agent" : "agents"}`, icon: Building2 },
+                { label: "Total properties", value: activeProperties.length, note: `${agents.length} active ${agents.length === 1 ? "agent" : "agents"}`, icon: Building2 },
                 { label: "Pending review", value: counts.pending || 0, note: "Awaiting a decision", icon: Clock3 },
                 { label: "Approved & available", value: counts.approved || 0, note: "Ready for buyers to discover", icon: BadgeCheck },
                 { label: "Sold properties", value: counts.sold || 0, note: `${formatPrice(totalSoldValue)} total sale value`, icon: CircleDollarSign },
@@ -398,7 +437,7 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
 
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter properties by status">
-                  {[{ id: "all", label: "All", count: properties.length }, ...QUEUES.map((queue) => ({ ...queue, count: counts[queue.id] || 0 }))].map(({ id, label, count }) => (
+                  {[{ id: "all", label: "All", count: activeProperties.length }, ...QUEUES.map((queue) => ({ ...queue, count: counts[queue.id] || 0 }))].map(({ id, label, count }) => (
                     <button key={id} type="button" onClick={() => setActiveQueue(id)} aria-pressed={activeQueue === id}
                       className={`rounded border px-2.5 py-1.5 text-[9px] transition-colors ${activeQueue === id ? "border-[#D6B38F] bg-[#FBF2E9] font-semibold text-[#8A4B0B]" : "border-[#E5E5E5] text-[#777] hover:bg-[#F8F8F8]"}`}>
                       {label} {count}
@@ -467,6 +506,22 @@ export default function AdminDashboard({ adminName = "Voks-Kalis Global admin" }
                               </button>
                             )}
                             {property.workflowStatus === "approved" && <button type="button" onClick={() => markSold(property)} className="text-[9px] font-semibold text-[#8A4B0B] hover:underline">Mark sold</button>}
+                            {property.workflowStatus === "approved" && (
+                              <button
+                                type="button"
+                                onClick={() => deleteProperty(property)}
+                                disabled={Boolean(deletingPropertyId)}
+                                className="inline-flex items-center gap-1 text-[9px] font-semibold text-[#B33B3B] hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                <Trash2 size={11} />
+                                {deletingPropertyId === property.id ? "Deleting…" : "Delete"}
+                              </button>
+                            )}
+                            {property.workflowStatus === "deleted" && (
+                              <button type="button" onClick={() => updateProperty(property.id, { restore: true })} className="text-[9px] font-semibold text-[#246B4D] hover:underline">
+                                Restore
+                              </button>
+                            )}
                             {property.workflowStatus === "declined" && <button type="button" onClick={() => updateProperty(property.id, { workflowStatus: "pending" })} className="text-[9px] font-semibold text-[#8A4B0B] hover:underline">Reopen review</button>}
                             {property.workflowStatus === "sold" && <>
                               <select value={property.paymentStatus || "in-progress"} onChange={(event) => updateProperty(property.id, { paymentStatus: event.target.value })} aria-label={`Payment status for ${property.title}`} className="rounded border border-[#E5E5E5] bg-white px-1.5 py-1 text-[8px] text-[#555] outline-none focus:border-[#A15912]">

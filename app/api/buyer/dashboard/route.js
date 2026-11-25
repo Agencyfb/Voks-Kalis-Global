@@ -38,13 +38,13 @@ export async function GET(request) {
 
     const savedIds = (user.savedProperties || []).map((id) => id.toString());
     const [properties, savedProperties] = await Promise.all([
-      Property.find({ status: "approved" })
+      Property.find({ status: "approved", deletedAt: null })
         .select("title category purpose price location image images beds baths areaSqm features")
         .sort({ reviewedAt: -1, createdAt: -1 })
         .limit(12)
         .lean(),
       savedIds.length
-        ? Property.find({ _id: { $in: savedIds }, status: "approved" })
+        ? Property.find({ _id: { $in: savedIds }, status: "approved", deletedAt: null })
           .select("title category purpose price location image images beds baths areaSqm features")
           .lean()
         : [],
@@ -89,7 +89,7 @@ export async function PATCH(request) {
     const { user, response } = await getBuyer(request);
     if (response) return response;
 
-    const property = await Property.findOne({ _id: body.propertyId, status: "approved" }).select("_id");
+    const property = await Property.findOne({ _id: body.propertyId, status: "approved", deletedAt: null }).select("_id");
     if (!property) return NextResponse.json({ error: "This approved property could not be found." }, { status: 404 });
 
     await user.updateOne(body.saved

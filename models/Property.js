@@ -47,6 +47,7 @@ const propertySchema = new mongoose.Schema({
   submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   assignedAgent: { type: String, trim: true, maxlength: 120, default: "" },
   status: { type: String, enum: ["pending", "approved", "declined", "sold"], default: "pending", index: true },
+  deletedAt: { type: Date, default: null, index: true },
   paymentStatus: { type: String, enum: ["in-progress", "paid"], default: "in-progress" },
   soldBy: { type: String, trim: true, maxlength: 120, default: "" },
   soldAt: { type: Date, default: null },

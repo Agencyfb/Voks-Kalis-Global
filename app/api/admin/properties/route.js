@@ -64,7 +64,8 @@ function formatProperty(property, includeAttachments = false) {
     submitterPhone: submitter?.phone || "",
     submittedAt: property.createdAt,
     assignedAgent: property.assignedAgent,
-    workflowStatus: property.status,
+    workflowStatus: property.deletedAt ? "deleted" : property.status,
+    deletedAt: property.deletedAt || null,
     reviewNote: property.reviewNote || "",
     paymentStatus: property.paymentStatus,
     soldBy: property.soldBy,
@@ -72,6 +73,7 @@ function formatProperty(property, includeAttachments = false) {
     reviewedAt: property.reviewedAt,
   };
 }
+
 
 async function requireAdmin(request) {
   const user = await getRequestUser(request);
@@ -143,6 +145,24 @@ export async function PATCH(request) {
     const { response } = await requireAdmin(request);
     if (response) return response;
 
+    if (body.updates.restore !== undefined) {
+      if (body.updates.restore !== true || Object.keys(body.updates).length !== 1) {
+        return NextResponse.json({ error: "A restore request cannot include other updates." }, { status: 400 });
+      }
+
+      const restoredProperty = await Property.findOneAndUpdate(
+        { _id: body.id, status: "approved", deletedAt: { $type: "date" } },
+        { $set: { deletedAt: null } },
+        { new: true },
+      )
+        .populate("submittedBy", "firstName lastName role email phone")
+        .lean();
+      if (!restoredProperty) {
+        return NextResponse.json({ error: "Deleted approved property not found." }, { status: 404 });
+      }
+      return NextResponse.json({ property: formatProperty(restoredProperty) });
+    }
+
     const updates = {};
     if (body.updates.workflowStatus !== undefined) {
       if (!["pending", "approved", "declined", "sold"].includes(body.updates.workflowStatus)) {
@@ -181,7 +201,11 @@ export async function PATCH(request) {
     }
     if (body.updates.soldAt !== undefined) updates.soldAt = body.updates.soldAt ? new Date(body.updates.soldAt) : null;
 
-    const property = await Property.findByIdAndUpdate(body.id, { $set: updates }, { new: true, runValidators: true })
+    const property = await Property.findOneAndUpdate(
+      { _id: body.id, deletedAt: null },
+      { $set: updates },
+      { new: true, runValidators: true },
+    )
       .populate("submittedBy", "firstName lastName role email phone")
       .lean();
     if (!property) return NextResponse.json({ error: "Property not found." }, { status: 404 });
@@ -190,5 +214,37 @@ export async function PATCH(request) {
   } catch (error) {
     console.error("Admin property update failed:", error);
     return NextResponse.json({ error: "Unable to update this property right now." }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
+  }
+
+  if (!body || typeof body.id !== "string" || !mongoose.isValidObjectId(body.id)) {
+    return NextResponse.json({ error: "A valid property ID is required." }, { status: 400 });
+  }
+
+  try {
+    const { response } = await requireAdmin(request);
+    if (response) return response;
+
+    const property = await Property.findOneAndUpdate(
+      { _id: body.id, status: "approved", deletedAt: null },
+      { $set: { deletedAt: new Date() } },
+      { new: true },
+    )
+      .populate("submittedBy", "firstName lastName role email phone")
+      .lean();
+    if (!property) return NextResponse.json({ error: "Property not found." }, { status: 404 });
+
+    return NextResponse.json({ property: formatProperty(property) });
+  } catch (error) {
+    console.error("Admin property deletion failed:", error);
+    return NextResponse.json({ error: "Unable to delete this property right now." }, { status: 500 });
   }
 }
