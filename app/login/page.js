@@ -1,9 +1,11 @@
 import { ArrowLeft, Home, LockKeyhole, ShieldCheck } from "lucide-react";
 import LoginForm from "@/components/LoginForm";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata = {
-  title: "Sign in | Voks-Kalis Global",
+  title: "Sign in",
   description: "Sign in to your Voks-Kalis Global account and continue your property search.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function LoginPage() {

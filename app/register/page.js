@@ -1,9 +1,11 @@
 import { ArrowLeft, Home, ShieldCheck, Sparkles } from "lucide-react";
 import RegisterForm from "@/components/RegisterForm";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata = {
-  title: "Create an account | Voks-Kalis Global",
+  title: "Create an account",
   description: "Create your Voks-Kalis Global account and find property you can trust.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function RegisterPage() {

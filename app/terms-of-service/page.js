@@ -1,11 +1,14 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Terms of Service | Voks-Kalis Global",
+export const metadata = buildPageMetadata({
+  title: "Terms of Service",
   description:
-    "Review the terms of service for browsing, enquiries, listings, and transactions on the Voks-Kalis Global website.",
-};
+    "Review the terms of service for browsing, property inspections, listings, agency fees, and transactions on the Voks-Kalis Global website.",
+  path: "/terms-of-service",
+});
 
 const TERMS_SECTIONS = [
   {
@@ -101,6 +104,12 @@ const TERMS_SECTIONS = [
 export default function TermsOfServicePage() {
   return (
     <main className="bg-[#f8f5f2] text-text-primary">
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Terms of Service", path: "/terms-of-service" },
+        ])}
+      />
       <Navbar />
 
       <section className="bg-white px-5 pb-8 pt-10 sm:px-8 sm:pb-12 sm:pt-14 lg:px-10 lg:pt-12">

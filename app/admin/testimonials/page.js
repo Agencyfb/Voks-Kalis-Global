@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import AdminTestimonialsManager from "@/components/AdminTestimonialsManager";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Manage testimonials | Voks-Kalis Global",
+  title: "Manage testimonials",
   description: "Manage client testimonials shown on the Voks-Kalis Global homepage.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function AdminTestimonialsPage() {

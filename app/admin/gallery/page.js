@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import AdminGalleryManager from "@/components/AdminGalleryManager";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Manage gallery | Voks-Kalis Global",
+  title: "Manage gallery",
   description: "Manage client and completed project gallery images.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function AdminGalleryPage() {

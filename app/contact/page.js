@@ -4,12 +4,27 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import ScrollReveal from "@/components/ScrollReveal";
+import JsonLd from "@/components/JsonLd";
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildPageMetadata,
+} from "@/lib/seo";
 
-export const metadata = {
-  title: "Contact Us | Voks-Kalis Global",
+export const metadata = buildPageMetadata({
+  title: "Contact Us",
   description:
-    "Contact Voks-Kalis Global for property buying, selling, management, consultancy and development enquiries.",
-};
+    "Contact Voks-Kalis Global in Port Harcourt, Nigeria for verified property inspections, buying, selling, property management, consultancy, and development enquiries.",
+  path: "/contact",
+  image: "/contact-building.jpg",
+  imageAlt: "Voks-Kalis residential property in a landscaped setting",
+  keywords: [
+    "contact Voks-Kalis Global",
+    "book property inspection Port Harcourt",
+    "real estate consultant Port Harcourt",
+    "property enquiry Nigeria",
+  ],
+});
 
 const SUPPORT_OPTIONS = [
   {
@@ -50,6 +65,15 @@ const FAQS = [
 export default function ContactPage() {
   return (
     <main>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Contact Us", path: "/contact" },
+          ]),
+          buildFaqJsonLd(FAQS),
+        ]}
+      />
       <Navbar />
 
       <section className="bg-white px-5 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-14 lg:px-10 lg:pb-12 lg:pt-12">

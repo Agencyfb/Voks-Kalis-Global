@@ -12,15 +12,24 @@ const CATEGORIES = [
   { value: "projects", label: "Projects delivered" },
 ];
 
-export default function GalleryBrowser({ initialCategory = "" }) {
+export default function GalleryBrowser({
+  initialCategory = "",
+  initialItems = [],
+  initialNextCursor = null,
+}) {
   const [category, setCategory] = useState(initialCategory);
-  const [items, setItems] = useState([]);
-  const [nextCursor, setNextCursor] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [items, setItems] = useState(initialItems);
+  const [nextCursor, setNextCursor] = useState(initialNextCursor);
+  const [isLoading, setIsLoading] = useState(initialItems.length === 0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
+    if (!hasInteracted && initialItems.length > 0 && category === initialCategory) {
+      return undefined;
+    }
+
     let active = true;
     async function loadGallery() {
       setIsLoading(true);
@@ -45,7 +54,7 @@ export default function GalleryBrowser({ initialCategory = "" }) {
 
     loadGallery();
     return () => { active = false; };
-  }, [category]);
+  }, [category, hasInteracted, initialCategory, initialItems.length]);
 
   async function loadMore() {
     if (!nextCursor || isLoadingMore) return;
@@ -67,6 +76,7 @@ export default function GalleryBrowser({ initialCategory = "" }) {
   }
 
   function selectCategory(value) {
+    setHasInteracted(true);
     setCategory(value);
     const url = value ? `/gallery?category=${value}` : "/gallery";
     window.history.replaceState(null, "", url);

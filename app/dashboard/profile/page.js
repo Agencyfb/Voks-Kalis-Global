@@ -4,13 +4,15 @@ import AgentProfileEditor from "@/components/AgentProfileEditor";
 import BuyerProfileEditor from "@/components/BuyerProfileEditor";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Edit profile | Voks-Kalis Global",
+  title: "Edit profile",
   description: "Update your account and property preferences.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function ProfileSettingsPage() {

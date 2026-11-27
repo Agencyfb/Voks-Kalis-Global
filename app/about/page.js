@@ -2,12 +2,23 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "About Us | Voks-Kalis Global Investment Limited",
+export const metadata = buildPageMetadata({
+  title: "About Us",
   description:
-    "Learn about Voks-Kalis Global Investment Limited and our thoughtful approach to real estate.",
-};
+    "Learn about Voks-Kalis Global Investment Limited in Port Harcourt, Rivers State — our vision, mission, and personal approach to buying, selling, managing, and developing real estate across Nigeria and for diaspora clients.",
+  path: "/about",
+  image: "/about-building.jpg",
+  imageAlt: "Contemporary residential property in a landscaped setting",
+  keywords: [
+    "about Voks-Kalis Global",
+    "Voks-Kalis Global Investment Limited",
+    "Port Harcourt real estate company",
+    "trusted property partner Nigeria",
+  ],
+});
 
 const CLIENTS = [
   {
@@ -51,6 +62,12 @@ const JOURNEY_STEPS = [
 export default function AboutPage() {
   return (
     <main>
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about" },
+        ])}
+      />
       <Navbar />
 
       <section className="bg-white px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-12">

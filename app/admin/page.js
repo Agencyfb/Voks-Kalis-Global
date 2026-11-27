@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import AdminDashboard from "@/components/AdminDashboard";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Admin dashboard | Voks-Kalis Global",
+  title: "Admin dashboard",
   description: "Manage Voks-Kalis Global property listings and sales.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function AdminPage() {

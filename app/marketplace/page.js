@@ -1,15 +1,17 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import JsonLd from "@/components/JsonLd";
 import connectDb from "@/connectDb/connect";
+import { formatPrice } from "@/data/properties";
+import {
+  buildBreadcrumbJsonLd,
+  buildMarketplaceCollectionJsonLd,
+  buildPageMetadata,
+} from "@/lib/seo";
 import Property from "@/models/Property";
 
 export const dynamic = "force-dynamic";
-
-export const metadata = {
-  title: "Marketplace | Voks-Kalis Global",
-  description: "Explore approved properties by category, property type and purpose.",
-};
 
 const CATEGORY_OPTIONS = [
   { value: "lands", label: "Land" },
@@ -34,6 +36,79 @@ const PURPOSE_OPTIONS = [
   { value: "rent", label: "For Rent" },
   { value: "shortlet", label: "Shortlet" },
 ];
+
+function parseMarketplaceFilters(searchParams = {}) {
+  const rawFilters = {
+    category: typeof searchParams.category === "string" ? searchParams.category : "",
+    propertyType: typeof searchParams.propertyType === "string"
+      ? searchParams.propertyType
+      : typeof searchParams.type === "string" ? searchParams.type : "",
+    purpose: typeof searchParams.purpose === "string" ? searchParams.purpose : "",
+    location: typeof searchParams.location === "string" ? searchParams.location.trim() : "",
+    maxPrice: typeof searchParams.maxPrice === "string" ? searchParams.maxPrice : "",
+    beds: typeof searchParams.beds === "string" ? searchParams.beds : "",
+  };
+  return {
+    ...rawFilters,
+    category: CATEGORY_OPTIONS.some((option) => option.value === rawFilters.category) ? rawFilters.category : "",
+    propertyType: TYPE_OPTIONS.some((option) => option.value === rawFilters.propertyType) ? rawFilters.propertyType : "",
+    purpose: PURPOSE_OPTIONS.some((option) => option.value === rawFilters.purpose) ? rawFilters.purpose : "",
+    maxPrice: /^\d+$/.test(rawFilters.maxPrice) && Number(rawFilters.maxPrice) > 0 ? rawFilters.maxPrice : "",
+    beds: /^\d+$/.test(rawFilters.beds) && Number(rawFilters.beds) > 0 ? rawFilters.beds : "",
+  };
+}
+
+export async function generateMetadata({ searchParams = {} }) {
+  const filters = parseMarketplaceFilters(searchParams);
+  const hasActiveFilter = Object.values(filters).some(Boolean);
+
+  if (!hasActiveFilter) {
+    return buildPageMetadata({
+      title: "Property Marketplace in Port Harcourt & Nigeria",
+      description:
+        "Browse verified houses, titled land, estates, commercial spaces, rentals, and shortlets for sale or lease in Port Harcourt, Rivers State, and across Nigeria.",
+      path: "/marketplace",
+      image: "/Estate New.png",
+      imageAlt: "Verified properties in the Voks-Kalis Global marketplace",
+      keywords: [
+        "Port Harcourt property marketplace",
+        "houses for sale Port Harcourt",
+        "land for sale Rivers State",
+        "shortlets Port Harcourt",
+        "commercial properties Nigeria",
+      ],
+    });
+  }
+
+  const parts = [];
+  if (filters.propertyType) {
+    parts.push(TYPE_OPTIONS.find((option) => option.value === filters.propertyType)?.label);
+  }
+  if (filters.category) {
+    parts.push(CATEGORY_OPTIONS.find((option) => option.value === filters.category)?.label);
+  }
+  if (filters.purpose) {
+    parts.push(PURPOSE_OPTIONS.find((option) => option.value === filters.purpose)?.label);
+  }
+  if (filters.beds) {
+    parts.push(`${filters.beds}+ Bedrooms`);
+  }
+  if (filters.location) {
+    parts.push(`in ${filters.location}`);
+  }
+  if (filters.maxPrice) {
+    parts.push(`up to ${formatPrice(Number(filters.maxPrice))}`);
+  }
+
+  const summary = parts.filter(Boolean).join(" ") || "Filtered Properties";
+  return buildPageMetadata({
+    title: `${summary} | Marketplace`,
+    description: `Explore verified ${summary.toLowerCase()} listings on Voks-Kalis Global across Port Harcourt, Rivers State, and Nigeria.`,
+    path: "/marketplace",
+    noIndex: true,
+    follow: true,
+  });
+}
 
 function normalizeCategory(category) {
   if (category === "land") return "lands";
@@ -137,24 +212,7 @@ function MarketplaceFacetSection({ title, description, options, field, listings,
 }
 
 export default async function MarketplacePage({ searchParams = {} }) {
-  const rawFilters = {
-    category: typeof searchParams.category === "string" ? searchParams.category : "",
-    propertyType: typeof searchParams.propertyType === "string"
-      ? searchParams.propertyType
-      : typeof searchParams.type === "string" ? searchParams.type : "",
-    purpose: typeof searchParams.purpose === "string" ? searchParams.purpose : "",
-    location: typeof searchParams.location === "string" ? searchParams.location.trim() : "",
-    maxPrice: typeof searchParams.maxPrice === "string" ? searchParams.maxPrice : "",
-    beds: typeof searchParams.beds === "string" ? searchParams.beds : "",
-  };
-  const filters = {
-    ...rawFilters,
-    category: CATEGORY_OPTIONS.some((option) => option.value === rawFilters.category) ? rawFilters.category : "",
-    propertyType: TYPE_OPTIONS.some((option) => option.value === rawFilters.propertyType) ? rawFilters.propertyType : "",
-    purpose: PURPOSE_OPTIONS.some((option) => option.value === rawFilters.purpose) ? rawFilters.purpose : "",
-    maxPrice: /^\d+$/.test(rawFilters.maxPrice) && Number(rawFilters.maxPrice) > 0 ? rawFilters.maxPrice : "",
-    beds: /^\d+$/.test(rawFilters.beds) && Number(rawFilters.beds) > 0 ? rawFilters.beds : "",
-  };
+  const filters = parseMarketplaceFilters(searchParams);
 
   await connectDb();
   const approvedProperties = await Property.find({ status: "approved", deletedAt: null })
@@ -199,6 +257,15 @@ export default async function MarketplacePage({ searchParams = {} }) {
 
   return (
     <main className="min-h-screen bg-cream">
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Marketplace", path: "/marketplace" },
+          ]),
+          buildMarketplaceCollectionJsonLd(filteredListings),
+        ]}
+      />
       <Navbar />
       <section className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
         <div className="max-w-2xl">

@@ -45,21 +45,25 @@ const MARKETPLACES = [
     title: "Lands",
     subtitle: "Explore Available Landed Properties",
     image: "/New Eneka Road.png",
+    href: "/marketplace?category=lands",
   },
   {
     title: "Buildings",
     subtitle: "Explore Available Houses",
     image: "photo-1600596542815-ffad4c1539a9",
+    href: "/marketplace?category=buildings",
   },
   {
     title: "Shortlets",
     subtitle: "Explore Available Shortlets",
     image: "photo-1600210492486-724fe5c67fb0",
+    href: "/marketplace?category=shortlets",
   },
   {
     title: "Rentals",
     subtitle: "Explore Available Houses for Rent",
     image: "/Estate New.png",
+    href: "/marketplace?category=rentals",
   },
 ];
 
@@ -267,12 +271,12 @@ export function MarketplaceSection() {
           {MARKETPLACES.map((item) => (
             <a
               key={item.title}
-              href="/marketplace"
+              href={item.href}
               className="group relative aspect-[1.21/1] overflow-hidden rounded-[16px] bg-surface-subtle"
             >
               <Image unoptimized width={1200} height={800}
                 src={item.image.startsWith("/") ? item.image : `https://images.unsplash.com/${item.image}?w=1000&q=85`}
-                alt=""
+                alt={`${item.title} — ${item.subtitle}`}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute bottom-[9%] left-[10%] flex min-h-[100px] w-[68%] items-start justify-between bg-white/90 px-5 py-4 backdrop-blur-[2px] sm:px-5">
@@ -332,7 +336,7 @@ export function ConsultantSection() {
           <div className="absolute bottom-0 right-0 w-[66%] bg-[#242424] px-4 py-5 text-center text-white shadow-xl transition duration-500 group-hover:-translate-y-3 sm:group-hover:bg-brand-copper-dark sm:bottom-[20%] sm:right-[-8%] sm:w-[58%] sm:px-6 sm:py-6 xl:bottom-auto xl:right-[-157px] xl:top-[22%] xl:h-[341px] xl:w-[315px] xl:px-8 xl:py-9">
             <Image width={1200} height={800}
               src="/Geraldine.png"
-              alt=""
+              alt="Iwarri Geraldine, Real Estate Consultant at Voks-Kalis Global"
               className="mx-auto h-16 w-16 rounded-full border-4 border-white object-cover xl:h-[150px] xl:w-[150px]"
             />
             <p className="mt-3 text-sm font-semibold xl:mt-6 xl:text-lg">Iwarri Geraldine</p>
@@ -392,7 +396,7 @@ export function InsightsSection() {
             <article key={item.title} className="overflow-hidden rounded-xl bg-white p-3 shadow-[0_6px_18px_rgba(24,48,68,.06)]">
               <Image unoptimized width={1200} height={800}
                 src={`https://images.unsplash.com/${item.image}?w=800&q=80`}
-                alt=""
+                alt={item.title}
                 className="h-[145px] w-full rounded-lg object-cover"
               />
               <div className="px-1 pb-2 pt-3">

@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import AdminPropertyReview from "@/components/AdminPropertyReview";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Review property | Voks-Kalis Global",
+  title: "Review property",
   description: "Preview and review a property listing before it is published.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function AdminPropertyReviewPage({ params }) {

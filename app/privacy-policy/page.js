@@ -1,11 +1,14 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Privacy Policy | Voks-Kalis Global",
+export const metadata = buildPageMetadata({
+  title: "Privacy Policy",
   description:
-    "Read Voks-Kalis Global's privacy policy covering data collection, use, rights, cookies, security and contact information.",
-};
+    "Read Voks-Kalis Global's privacy policy covering data collection, use, Nigeria Data Protection Act 2023 compliance, cookies, security, and contact details.",
+  path: "/privacy-policy",
+});
 
 const PRIVACY_SECTIONS = [
   {
@@ -102,6 +105,12 @@ const PRIVACY_SECTIONS = [
 export default function PrivacyPolicyPage() {
   return (
     <main className="bg-[#f8f5f2] text-text-primary">
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy-policy" },
+        ])}
+      />
       <Navbar />
 
       <section className="bg-white px-5 pb-8 pt-10 sm:px-8 sm:pb-12 sm:pt-14 lg:px-10 lg:pt-12">

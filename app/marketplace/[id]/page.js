@@ -4,8 +4,14 @@ import mongoose from "mongoose";
 import { BedDouble, Bath, MapPin, Ruler } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { formatPrice } from "@/data/properties";
 import connectDb from "@/connectDb/connect";
+import {
+  buildBreadcrumbJsonLd,
+  buildPageMetadata,
+  buildPropertyJsonLd,
+} from "@/lib/seo";
 import Property from "@/models/Property";
 
 export const dynamic = "force-dynamic";
@@ -16,19 +22,70 @@ function getPeriod(purpose) {
   return "";
 }
 
+function getPurposeLabel(purpose) {
+  if (purpose === "sale" || purpose === "sales") return "For Sale";
+  if (purpose === "lease") return "For Lease";
+  if (purpose === "rent") return "For Rent";
+  if (purpose === "shortlet") return "Shortlet";
+  return "Available";
+}
+
+function getListingImages(property) {
+  return property.images?.length
+    ? property.images.map((image) => image.url || image.data).filter(Boolean)
+    : [property.image].filter(Boolean);
+}
+
 export async function generateMetadata({ params }) {
   if (!mongoose.isValidObjectId(params.id)) {
-    return { title: "Property not found | Voks-Kalis Global" };
+    return buildPageMetadata({
+      title: "Property not found",
+      description: "This property listing could not be found.",
+      noIndex: true,
+    });
   }
   await connectDb();
   const property = await Property.findOne({ _id: params.id, status: "approved", deletedAt: null })
-    .select("title location")
+    .select("title category purpose propertyType price location propertyAddress description beds baths areaSqm image images")
     .lean();
 
-  return {
-    title: property ? `${property.title} | Voks-Kalis Global` : "Property | Voks-Kalis Global",
-    description: property ? `${property.title} in ${property.location}. View this approved Voks-Kalis Global listing.` : "Approved Voks-Kalis Global property listing.",
-  };
+  if (!property) {
+    return buildPageMetadata({
+      title: "Property not found",
+      description: "This property listing is no longer available.",
+      noIndex: true,
+    });
+  }
+
+  const images = getListingImages(property);
+  const purposeLabel = getPurposeLabel(property.purpose);
+  const period = getPeriod(property.purpose);
+  const priceText = `${formatPrice(property.price)}${period ? `/${period}` : ""}`;
+  const specs = [
+    property.beds > 0 ? `${property.beds} bed` : "",
+    property.baths > 0 ? `${property.baths} bath` : "",
+    property.areaSqm > 0 ? `${property.areaSqm} m²` : "",
+  ].filter(Boolean).join(", ");
+  const summaryPrefix = `${property.title} — ${purposeLabel} in ${property.location} at ${priceText}${specs ? ` (${specs})` : ""}.`;
+  const cleanDescription = (property.description || "").replace(/\s+/g, " ").trim();
+  const description = cleanDescription
+    ? `${summaryPrefix} ${cleanDescription}`.slice(0, 160)
+    : `${summaryPrefix} View verified property details and book an inspection with Voks-Kalis Global.`;
+
+  return buildPageMetadata({
+    title: `${property.title} (${purposeLabel}) in ${property.location}`,
+    description,
+    path: `/marketplace/${params.id}`,
+    image: images,
+    imageAlt: `${property.title} in ${property.location}`,
+    keywords: [
+      property.title,
+      property.location,
+      `${property.category} ${property.location}`,
+      `${purposeLabel} ${property.location}`,
+      "Voks-Kalis Global property",
+    ],
+  });
 }
 
 export default async function MarketplacePropertyPage({ params }) {
@@ -36,14 +93,12 @@ export default async function MarketplacePropertyPage({ params }) {
 
   await connectDb();
   const property = await Property.findOne({ _id: params.id, status: "approved", deletedAt: null })
-    .select("title category purpose propertyType price location propertyAddress description beds baths areaSqm features landmarks landUse image images")
+    .select("title category purpose propertyType price location propertyAddress description beds baths areaSqm features landmarks landUse image images reviewedAt createdAt")
     .lean();
 
   if (!property) notFound();
 
-  const images = property.images?.length
-    ? property.images.map((image) => image.url || image.data).filter(Boolean)
-    : [property.image];
+  const images = getListingImages(property);
   const mapAddress = property.propertyAddress || property.location;
   const whatsappLink = (message) =>
     `https://wa.me/2348063880053?text=${encodeURIComponent(message)}`;
@@ -51,6 +106,16 @@ export default async function MarketplacePropertyPage({ params }) {
 
   return (
     <main className="min-h-screen bg-cream">
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Marketplace", path: "/marketplace" },
+            { name: property.title, path: `/marketplace/${params.id}` },
+          ]),
+          buildPropertyJsonLd(property, images),
+        ]}
+      />
       <Navbar />
       <article className="mx-auto max-w-7xl px-6 py-10 lg:px-10 lg:py-16">
         <a href="/marketplace" className="text-sm font-semibold text-forest underline-offset-4 hover:underline">

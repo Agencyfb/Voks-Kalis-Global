@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import AdminBlogManager from "@/components/AdminBlogManager";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Manage blog | Voks-Kalis Global",
+  title: "Manage blog",
   description: "Create and manage articles in the Voks-Kalis Global journal.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function AdminBlogPage() {

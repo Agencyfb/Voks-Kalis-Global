@@ -37,6 +37,7 @@ export default function Hero() {
           src="/hero-building.png"
           alt=""
           aria-hidden="true"
+          priority
           className="pointer-events-none absolute bottom-0 right-0 h-[78%] w-full object-contain object-bottom sm:h-[88%] lg:h-full lg:w-[68%]"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#D8EEFF] via-[#D0E9FF]/95 to-transparent lg:w-[72%]" />

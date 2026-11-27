@@ -3,12 +3,28 @@ import { ArrowRight, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
+import JsonLd from "@/components/JsonLd";
+import {
+  buildBreadcrumbJsonLd,
+  buildPageMetadata,
+  buildServicesJsonLd,
+} from "@/lib/seo";
 
-export const metadata = {
-  title: "Real Estate Services | Voks-Kalis Global",
+export const metadata = buildPageMetadata({
+  title: "Real Estate Services in Port Harcourt & Nigeria",
   description:
-    "Explore Voks-Kalis Global services for buying, selling, property management, consultancy and development.",
-};
+    "Explore Voks-Kalis Global Investment Limited services in Port Harcourt, Rivers State, and Nigeria: property buying, selling, property management, consultancy, and sustainable development.",
+  path: "/services",
+  image: "/service-buying.png",
+  imageAlt: "Voks-Kalis Global real estate buying, selling, management and development services",
+  keywords: [
+    "real estate services Port Harcourt",
+    "property management Rivers State",
+    "property consultancy Nigeria",
+    "real estate development Port Harcourt",
+    "buy and sell property Nigeria",
+  ],
+});
 
 const SERVICES = [
   {
@@ -101,6 +117,15 @@ const JOURNEY_STEPS = [
 export default function ServicesPage() {
   return (
     <main>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+          ]),
+          buildServicesJsonLd(SERVICES),
+        ]}
+      />
       <Navbar />
 
       <section className="bg-white px-5 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-14 lg:px-10 lg:pb-12 lg:pt-12">

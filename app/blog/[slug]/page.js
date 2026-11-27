@@ -3,22 +3,43 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { getPublishedBlogPost, getPublishedBlogPosts } from "@/lib/blog";
+import {
+  buildBlogPostingJsonLd,
+  buildBreadcrumbJsonLd,
+  buildPageMetadata,
+  SITE_INFO,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const article = await getPublishedBlogPost(params.slug);
-  if (!article) return { title: "Article not found | Voks-Kalis Global" };
-  return {
-    title: `${article.title} | The Voks Journal`,
+  if (!article) {
+    return buildPageMetadata({
+      title: "Article not found",
+      description: "The requested journal article could not be found.",
+      noIndex: true,
+    });
+  }
+  const publishedTime = article.publishedAt
+    ? new Date(article.publishedAt).toISOString()
+    : undefined;
+
+  return buildPageMetadata({
+    title: article.title,
     description: article.excerpt,
-    openGraph: {
-      title: article.title,
-      description: article.excerpt,
-      images: [article.image],
-    },
-  };
+    path: `/blog/${article.slug}`,
+    image: article.image,
+    imageAlt: article.imageAlt || article.title,
+    type: "article",
+    publishedTime,
+    modifiedTime: publishedTime,
+    section: article.category,
+    authors: [SITE_INFO.name],
+    keywords: [article.category, article.eyebrow, "Voks-Kalis Global", "Nigerian real estate guide"],
+  });
 }
 
 export default async function BlogArticlePage({ params }) {
@@ -36,6 +57,16 @@ export default async function BlogArticlePage({ params }) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: article.title, path: `/blog/${article.slug}` },
+          ]),
+          buildBlogPostingJsonLd(article),
+        ]}
+      />
       <Navbar />
       <main className="bg-white">
         <article className="mx-auto max-w-4xl px-5 py-9 sm:px-8 sm:py-12">

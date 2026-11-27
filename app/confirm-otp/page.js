@@ -1,9 +1,11 @@
 import { ArrowLeft, Home, LockKeyhole, ShieldCheck } from "lucide-react";
 import ConfirmOTPForm from "@/components/ConfirmOTPForm";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata = {
-  title: "Confirm reset code | Voks-Kalis Global",
+  title: "Confirm reset code",
   description: "Verify your password reset code and set a new password.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function ConfirmOTPPage() {

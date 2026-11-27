@@ -5,13 +5,15 @@ import BuyerDashboard from "@/components/BuyerDashboard";
 import ProfileDashboard from "@/components/ProfileDashboard";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Buyer dashboard | Voks-Kalis Global",
+  title: "Buyer dashboard",
   description: "Discover approved homes, save your shortlist and manage your property search.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function DashboardPage() {

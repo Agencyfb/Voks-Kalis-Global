@@ -3,13 +3,15 @@ import { redirect } from "next/navigation";
 import AdminProfileEditor from "@/components/AdminProfileEditor";
 import connectDb from "@/connectDb/connect";
 import { getSessionUserId, sessionCookie } from "@/lib/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Edit admin profile | Voks-Kalis Global",
+  title: "Edit admin profile",
   description: "Update your administrator profile, workspace details and notifications.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function AdminProfilePage() {

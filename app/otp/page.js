@@ -1,9 +1,11 @@
 import { ArrowLeft, Home, Lock, Zap } from "lucide-react";
 import OTPForm from "@/components/OTPForm";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata = {
-  title: "Verify your account | Voks-Kalis Global",
+  title: "Verify your account",
   description: "Enter your verification code to complete your Voks-Kalis Global account setup.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function OTPPage() {

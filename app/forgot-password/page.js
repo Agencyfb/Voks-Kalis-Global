@@ -1,9 +1,11 @@
 import { ArrowLeft, Home, LockKeyhole, ShieldCheck } from "lucide-react";
 import ForgotPasswordForm from "@/components/ForgotPasswordForm";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata = {
-  title: "Reset password | Voks-Kalis Global",
+  title: "Reset password",
   description: "Securely reset your Voks-Kalis Global account password.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function ForgotPasswordPage() {

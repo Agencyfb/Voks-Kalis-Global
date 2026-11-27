@@ -41,7 +41,7 @@ export default function PropertyCard({ property }) {
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image unoptimized width={1200} height={800}
           src={image}
-          alt={title}
+          alt={location ? `${title} in ${location}` : title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <span
